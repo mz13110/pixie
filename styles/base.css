@@ -1,0 +1,52 @@
+:root {
+    --bg-1: #252525;
+    --bg-2: #2c2c2c;
+
+    --text-1: #ffffff;
+
+    --accent-1: #6c6c6c;
+    --accent-2: #525252;
+    --accent-3: #313131;
+    --accent-4: #1a1a1a;
+
+    --selected: #099cff;
+
+    font-family: 'Inter', sans-serif;
+    color: var(--text-1);
+}
+
+input[type="date"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"] {
+    appearance: none;
+    background-color: var(--bg-2);
+    border: 1px solid var(--accent-2);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-1);
+    border-radius: 5px;
+}
+
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+input[type="email"]:focus,
+input[type="month"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="text"]:focus,
+input[type="time"]:focus,
+input[type="url"]:focus,
+input[type="week"]:focus {
+    border: 1px solid var(--selected);
+    outline: none;
+}
