@@ -6,18 +6,22 @@
     display: flex;
     flex-direction: row;
     gap: 16px;
+    flex-wrap: wrap;
 }
 .color, .add {
+    --color: #ffffff;
+
     width: 30px;
     height: 30px;
 
     border: 2px solid var(--accent-1);
     cursor: pointer;
+    background-color: var(--color);
 }
 .color[data-selected="true"], .add[data-selected="true"] {
     border: 2px solid var(--selected);
 }
-.add > box-icon {
+.color > box-icon, .add > box-icon {
     width: 100%;
     height: 100%;
 }

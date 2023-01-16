@@ -44,10 +44,28 @@ body {
 .section-header>.bx, .section-header>span {
     margin-right: 6px;
 }
-.section-header>div {
+.section-header-line {
     height: 2px;
     flex-grow: 1;
     background-color: var(--text-1);
+}
+.section-header-buttons {
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.section-header-buttons>div {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.section-header-buttons>div>.bx {
+    color: #ffffff;
+    font-size: 16px;
 }
 
 .canvas {

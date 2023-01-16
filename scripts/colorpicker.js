@@ -13,9 +13,9 @@ class ColorPickerElement extends HTMLElement {
     constructor() {
         super()
 
-        GlobalState.sub("colorpicker.color.hue", (v) => (this.#hue = v, this.onChanged()))
-        GlobalState.sub("colorpicker.color.sat", (v) => (this.#sat = v, this.onChanged()))
-        GlobalState.sub("colorpicker.color.val", (v) => (this.#val = v, this.onChanged()))        
+        GlobalState.sub("colorpicker.color.hue", (v) => {this.#hue = v; this.onChanged()})
+        GlobalState.sub("colorpicker.color.sat", (v) => {this.#sat = v; this.onChanged()})
+        GlobalState.sub("colorpicker.color.val", (v) => {this.#val = v; this.onChanged()})
 
         this.attachShadow({
             mode: "open"
@@ -45,9 +45,9 @@ class ColorPickerElement extends HTMLElement {
                 <div class="hex-container">
                     <input type="text" class="hex" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" value="#ff0000"></input>
                     <!--
-                    <button type="button" class="eyedropper">
+                    <div class="button eyedropper">
                         <box-icon type="solid" name="eyedropper"></box-icon>
-                    </button>
+                    </div>
                     -->
                 </div>
                 <div class="slider-container">
@@ -71,13 +71,13 @@ class ColorPickerElement extends HTMLElement {
         this.$container = this.sr.querySelector(".container")
         this.$wheelPointer = this.sr.querySelector(".wheel-pointer")
         this.$wheelContainer = this.sr.querySelector(".wheel-container")
-        
+
         this.$wheelInnerContainer = this.sr.querySelector(".wheel-inner-container")
         this.$wheelInner = this.sr.querySelector(".wheel-inner")
         this.$wheelSatV = this.sr.querySelector(".wheel-satv")
         this.$wheelSatVCanvas = this.sr.querySelector(".wheel-satv-canvas")
         this.$wheelSatVHandle = this.sr.querySelector(".wheel-satv-handle")
-        
+
         this.$hexContainer = this.sr.querySelector(".hex-container")
         this.$hex = this.sr.querySelector(".hex")
         this.$sliderHue = this.sr.querySelector(".slider-hue")
@@ -122,14 +122,14 @@ class ColorPickerElement extends HTMLElement {
             this.changingWheelSatV = true
             this.updateSatV(e.pageX, e.pageY, true)
         }
-        
+
         fixInputClamping(this.$inputHue)
         fixInputClamping(this.$inputSat)
         fixInputClamping(this.$inputVal)
         linkInputToSlider(this.$sliderHue, this.$inputHue)
         linkInputToSlider(this.$sliderSat, this.$inputSat)
         linkInputToSlider(this.$sliderVal, this.$inputVal)
-        
+
         this.$sliderHue.oninput = () => {this.hue = this.$sliderHue.value; this.redraw()}
         this.$sliderSat.oninput = () => {this.sat = this.$sliderSat.value; this.redraw()}
         this.$sliderVal.oninput = () => {this.val = this.$sliderVal.value; this.redraw()}
@@ -141,7 +141,7 @@ class ColorPickerElement extends HTMLElement {
             hex = hex.match(/^#?([a-fA-F0-9]{6})$/)
             if(hex === null) return this.redrawHex() // redrawHex() changes the text back
             hex = hex[0]
-            
+
             let c = rgb2hsv(
                 parseInt(hex.slice(0, 2), 16),
                 parseInt(hex.slice(2, 4), 16),
@@ -222,7 +222,7 @@ class ColorPickerElement extends HTMLElement {
 
         this.redraw()
     }
-    
+
     redraw() {
         this.redrawHue()
         this.redrawSatV()
@@ -258,7 +258,7 @@ class ColorPickerElement extends HTMLElement {
                 img.data[(s*y+x)*4+1] = color.g
                 img.data[(s*y+x)*4+2] = color.b
                 img.data[(s*y+x)*4+3] = 255
-                
+
             }
         }
         this.satVCtx.putImageData(img, 0, 0)
@@ -293,7 +293,7 @@ class ColorPickerElement extends HTMLElement {
 
         this.$hex.style.backgroundColor = `rgb(${c.r}, ${c.g}, ${c.b})`
         this.$hexContainer.style.setProperty("--color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
-        //this.$hexContainer.querySelector("button>box-icon").setAttribute("color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
+        //this.$hexContainer.querySelector(".eyedropper>box-icon").setAttribute("color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
 
         this.$hex.value = "#"
             + (c.r<16?"0":"") + c.r.toString(16)

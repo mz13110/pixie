@@ -5,11 +5,11 @@ class Canvas {
         e.width = Math.ceil(w)
         e.height = Math.ceil(h)
         e.classList.add("canvas")
-    
+
         let drawing = false
-    
+
         let ctx = e.getContext("2d")
-        
+
         function set(x, y) {
             ctx.fillStyle = e.getAttribute("fill")
             ctx.fillRect(Math.floor(x), Math.floor(y), 1, 1)
