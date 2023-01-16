@@ -1,10 +1,21 @@
 class ColorPickerElement extends HTMLElement {
+    #hue = 0
+    #sat = 100
+    #val = 100
+
+    set hue(v) {GlobalState.set("colorpicker.color.hue", v)}
+    get hue() {return this.#hue}
+    set sat(v) {GlobalState.set("colorpicker.color.sat", v)}
+    get sat() {return this.#sat}
+    set val(v) {GlobalState.set("colorpicker.color.val", v)}
+    get val() {return this.#val}
+
     constructor() {
         super()
 
-        this.hue = 0
-        this.sat = 100
-        this.val = 100
+        GlobalState.sub("colorpicker.color.hue", (v) => (this.#hue = v, this.onChanged()))
+        GlobalState.sub("colorpicker.color.sat", (v) => (this.#sat = v, this.onChanged()))
+        GlobalState.sub("colorpicker.color.val", (v) => (this.#val = v, this.onChanged()))        
 
         this.attachShadow({
             mode: "open"
@@ -31,7 +42,14 @@ class ColorPickerElement extends HTMLElement {
             </div>
 
             <div class="bottom-container">
-                <div class="preview"></div>
+                <div class="hex-container">
+                    <input type="text" class="hex" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" value="#ff0000"></input>
+                    <!--
+                    <button type="button" class="eyedropper">
+                        <box-icon type="solid" name="eyedropper"></box-icon>
+                    </button>
+                    -->
+                </div>
                 <div class="slider-container">
                     <span class="slider-label">H</span>
                     <input type="range" class="slider slider-hue" min="0" max="360" />
@@ -59,6 +77,15 @@ class ColorPickerElement extends HTMLElement {
         this.$wheelSatV = this.sr.querySelector(".wheel-satv")
         this.$wheelSatVCanvas = this.sr.querySelector(".wheel-satv-canvas")
         this.$wheelSatVHandle = this.sr.querySelector(".wheel-satv-handle")
+        
+        this.$hexContainer = this.sr.querySelector(".hex-container")
+        this.$hex = this.sr.querySelector(".hex")
+        this.$sliderHue = this.sr.querySelector(".slider-hue")
+        this.$inputHue = this.sr.querySelector(".input-hue")
+        this.$sliderSat = this.sr.querySelector(".slider-sat")
+        this.$inputSat = this.sr.querySelector(".input-sat")
+        this.$sliderVal = this.sr.querySelector(".slider-val")
+        this.$inputVal = this.sr.querySelector(".input-val")
 
         this.outerDiameter = this.$wheelContainer.getBoundingClientRect().width
         this.innerDiameter = this.$wheelInnerContainer.getBoundingClientRect().width
@@ -76,13 +103,12 @@ class ColorPickerElement extends HTMLElement {
 
         this.changingWheelHue = false
         this.changingWheelSatV = false
+        this.satVDragOrigin = null
 
         this.satVSize = 256
         this.$wheelSatVCanvas.width = this.satVSize
         this.$wheelSatVCanvas.height = this.satVSize
         this.satVCtx = this.$wheelSatVCanvas.getContext("2d")
-
-        this.redrawSatV()
 
 
         window.onmousemove = (e) => {
@@ -94,12 +120,43 @@ class ColorPickerElement extends HTMLElement {
         this.$wheelContainer.onmousedown = (e) => this.updateHue(e.pageX, e.pageY)
         this.$wheelInner.onmousedown = (e) => {
             this.changingWheelSatV = true
-            this.updateSatV(e.pageX, e.pageY)
+            this.updateSatV(e.pageX, e.pageY, true)
         }
-        this.sr.querySelectorAll(".input").forEach(fixInputClamping)
-        for(let bruh of ["hue", "sat", "val"]) {
-            linkSliderToInput(this.sr.querySelector(".slider-" + bruh), this.sr.querySelector(".input-" + bruh))
+        
+        fixInputClamping(this.$inputHue)
+        fixInputClamping(this.$inputSat)
+        fixInputClamping(this.$inputVal)
+        linkInputToSlider(this.$sliderHue, this.$inputHue)
+        linkInputToSlider(this.$sliderSat, this.$inputSat)
+        linkInputToSlider(this.$sliderVal, this.$inputVal)
+        
+        this.$sliderHue.oninput = () => {this.hue = this.$sliderHue.value; this.redraw()}
+        this.$sliderSat.oninput = () => {this.sat = this.$sliderSat.value; this.redraw()}
+        this.$sliderVal.oninput = () => {this.val = this.$sliderVal.value; this.redraw()}
+
+        this.$hex.onchange = () => {
+            let hex = this.$hex.value.trim()
+            if(hex.startsWith("#")) hex = hex.slice(1)
+
+            hex = hex.match(/^#?([a-fA-F0-9]{6})$/)
+            if(hex === null) return this.redrawHex() // redrawHex() changes the text back
+            hex = hex[0]
+            
+            let c = rgb2hsv(
+                parseInt(hex.slice(0, 2), 16),
+                parseInt(hex.slice(2, 4), 16),
+                parseInt(hex.slice(4, 6), 16)
+            )
+            this.hue = c.h
+            this.sat = c.s
+            this.val = c.v
+            this.redrawHex()
         }
+
+        this.hue = 0
+        this.sat = 100
+        this.val = 100
+        this.redraw()
     }
 
     // note: coordinates are relative to page
@@ -113,12 +170,12 @@ class ColorPickerElement extends HTMLElement {
         if(!this.changingWheelHue && (d <= this.innerDiameter/2 || d >= this.outerDiameter/2)) return
         this.changingWheelHue = true
 
-        this.hue = Math.clamp(Math.round((Math.rad2deg(Math.atan2(y-centerY, x-centerX)) + 360) % 360), 0, 360)
+        this.hue = Math.clamp(Math.round(Math.angleAround(x, y, centerX, centerY)), 0, 360)
 
         this.redraw()
     }
     // note: coordinates are relative to page
-    updateSatV(x_, y_) {
+    updateSatV(x_, y_, isStart) {
         if(!this.changingWheelSatV) return
 
         let size = window.getComputedStyle(this.$wheelInner).width.slice(0, -2)
@@ -132,25 +189,64 @@ class ColorPickerElement extends HTMLElement {
         x-=left
         y-=top
 
-        this.sat = x/size*100
-        this.val = y/size*100
+        if(isStart) this.satVDragOrigin = {x, y}
+        if(x > size || y > size || x < 0 || y < 0) {
+            let s = size
+
+            let f = y > x
+            let g = y > (s-x)
+
+            let ox = s/2
+            let oy = s/2
+
+            // make corners minmax values
+            let a = Math.angleAround(x, y, ox, oy)
+            let m = 6 // minmax within 6 degrees
+            if(a <= 45+m/2 && a >= 45-m/2) x = size, y = size // bottom right
+            if(a <= 135+m/2 && a >= 135-m/2) x = 0, y = size // bottom left
+            if(a <= 225+m/2 && a >= 225-m/2) x = 0, y = 0 // top left
+            if(a <= 315+m/2 && a >= 315-m/2) x = size, y = 0 // top right
+
+            if(f) {
+                if(g) x = ((x-ox)/(y-oy)) * (s-oy) + ox, y = s
+                else y = ((y-oy)/(x-ox)) * (-ox) + oy, x = 0
+            }
+            else {
+                if(g) y = ((y-oy)/(x-ox)) * (s-ox) + oy, x = s
+                else x = ((x-ox)/(y-oy)) * (-oy) + ox, y = 0
+            }
+        }
+
+        this.sat = Math.clamp(Math.round(x/size*100), 0, 100)
+        this.val = Math.clamp(Math.round(y/size*100), 0, 100)
 
         this.redraw()
     }
     
     redraw() {
-        this.$wheelPointer.style.transform = `rotate(${this.hue}deg)`
-        this.$wheelInner.style.transform = `rotate(${this.hue - 45}deg)`
-
+        this.redrawHue()
         this.redrawSatV()
+        this.redrawSliders()
+        this.redrawHex()
+    }
+
+    redrawHue() {
+        this.$wheelPointer.style.transform = `rotate(${this.hue}deg)`
+
+        this.$wheelPointer.style.setProperty("--color", contrastColor(this.hue, 100, 100) === "black" ? "#000000" : "#ffffff")
     }
 
     redrawSatV() {
+        this.$wheelInner.style.transform = `rotate(${this.hue - 45}deg)`
+
         let size = window.getComputedStyle(this.$wheelSatV).width.slice(0, -2)
 
         this.$wheelSatVHandle.style.left = (this.sat/100*size) + "px"
         this.$wheelSatVHandle.style.top = (this.val/100*size) + "px"
 
+        this.$wheelSatVHandle.style.setProperty("--color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
+
+        // background
         const s = this.satVSize
         let img = this.satVCtx.createImageData(s, s)
 
@@ -169,7 +265,44 @@ class ColorPickerElement extends HTMLElement {
     }
 
     redrawSliders() {
+        this.$sliderHue.value = this.hue
+        this.$inputHue.value = this.hue
+        this.$sliderHue.style.setProperty("--color", contrastColor(this.hue, 100, 100) === "black" ? "#000000" : "#ffffff")
 
+        let contrast = contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff"
+
+        this.$sliderSat.value = this.sat
+        this.$inputSat.value = this.sat
+        let c1 = hsv2rgb(this.hue, 0, this.val)
+        let c2 = hsv2rgb(this.hue, 100, this.val)
+        this.$sliderSat.style.backgroundImage
+            = `linear-gradient(90deg, rgb(${c1.r}, ${c1.g}, ${c1.b}), rgb(${c2.r}, ${c2.g}, ${c2.b}))`
+        this.$sliderSat.style.setProperty("--color", (this.sat===0 || this.sat===100) ? "#ffffff" : contrast)
+
+        this.$sliderVal.value = this.val
+        this.$inputVal.value = this.val
+        c1 = hsv2rgb(this.hue, this.sat, 0)
+        c2 = hsv2rgb(this.hue, this.sat, 100)
+        this.$sliderVal.style.backgroundImage
+            = `linear-gradient(90deg, rgb(${c1.r}, ${c1.g}, ${c1.b}), rgb(${c2.r}, ${c2.g}, ${c2.b}))`
+        this.$sliderVal.style.setProperty("--color", (this.val===0 || this.val===100) ? "#ffffff" : contrast)
+    }
+
+    redrawHex() {
+        let c = hsv2rgb(this.hue, this.sat, this.val)
+
+        this.$hex.style.backgroundColor = `rgb(${c.r}, ${c.g}, ${c.b})`
+        this.$hexContainer.style.setProperty("--color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
+        //this.$hexContainer.querySelector("button>box-icon").setAttribute("color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
+
+        this.$hex.value = "#"
+            + (c.r<16?"0":"") + c.r.toString(16)
+            + (c.g<16?"0":"") + c.g.toString(16)
+            + (c.b<16?"0":"") + c.b.toString(16)
+    }
+
+    onChanged() {
+        this.redraw()
     }
 
     get sr() {

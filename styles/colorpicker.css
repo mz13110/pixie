@@ -28,6 +28,8 @@
     justify-content: center;
 }
 .wheel-pointer {
+    --color: #ffffff;
+
     position: absolute;
     top: 0px;
     left: 0px;
@@ -42,8 +44,8 @@
     bottom: calc(50% - calc(0.5% / 2));
 
     width: 14%;
-    height: 1%;
-    background-color: #ffffff;
+    height: 3px;
+    background-color: var(--color);
 }
 
 .wheel-inner-container {
@@ -78,6 +80,8 @@
     height: 100%;
 }
 .wheel-satv-handle {
+    --color: #ffffff;
+
     width: 0px;
     height: 0px;
 
@@ -91,7 +95,7 @@
     height: 7.5px;
 
     background-color: transparent;
-    border: 2px solid #ffffff;
+    border: 3px solid var(--color);
     border-radius: 100%;
 
     position: absolute;
@@ -100,13 +104,46 @@
     pointer-events: none;
 }
 
-.preview {
-    height: 35px;
-    width: 100%;
-    background-color: red;
-
+.hex-container {
     margin-bottom: 16px;
     margin-top: 16px;
+    position: relative;
+
+    height: 37px;
+    --color: #ffffff;
+
+}
+.hex {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    
+    color: var(--color) !important;
+
+    font-size: 23px;
+    font-weight: 500;
+
+    text-align: center;
+    padding: 0px;
+    width: calc(100% - 2px);
+    height: 35px;
+}
+.eyedropper {
+    width: 37px;
+    height: 37px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    border: none !important;
+    background-color: transparent;
+    cursor: pointer;
+}
+.eyedropper>box-icon {
+    width: 31px;
+    height: 31px;
+    position: absolute;
+    top: 3px;
+    left: 3px;
 }
 
 .slider-container {
@@ -122,11 +159,14 @@
     font-size: 15px;
 
     width: 25px;
+    user-select: none;
 }
 .slider-label::after {
     content: ":";
 }
 .slider {
+    --color: #ffffff;
+
     margin: 0px;
     appearance: none;
     height: 100%;
@@ -140,13 +180,13 @@
     appearance: none;
     height: 35px;
     width: 3px;
-    background-color: #ffffff;
+    background-color: var(--color);
 }
 .slider::-moz-range-thumb {
     appearance: none;
     height: 35px;
     width: 3px;
-    background-color: #ffffff;
+    background-color: var(--color);
 }
 .slider-hue {
     background-image: linear-gradient(90deg, #FF0000FF 0%, #FFFF00FF 16.666%, #00FF00FF 33.332%, #00FFFFFF 49.998%, #0000FFFF 66.664%, #FF00FFFF 83.33%, #FF0000FF 100%);
@@ -156,6 +196,7 @@
     font-size: 15px;
     padding-left: 8px;
     padding-right: 8px;
+    width: 40px;
 }
 
 input[type=number]::-webkit-inner-spin-button { 

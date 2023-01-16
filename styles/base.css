@@ -1,8 +1,14 @@
+@font-face {
+    font-family: 'Font Awesome Solid Sharp';
+    src: url('assets/fa-solid-sharp.woff2') format("woff2");
+}
+
 :root {
     --bg-1: #252525;
     --bg-2: #2c2c2c;
 
     --text-1: #ffffff;
+    --text-2: #000000;
 
     --accent-1: #6c6c6c;
     --accent-2: #525252;
@@ -27,6 +33,14 @@ input[type="text"],
 input[type="time"],
 input[type="url"],
 input[type="week"] {
+    appearance: none;
+    background-color: var(--bg-2);
+    border: 1px solid var(--accent-2);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-1);
+    border-radius: 5px;
+}
+button {
     appearance: none;
     background-color: var(--bg-2);
     border: 1px solid var(--accent-2);

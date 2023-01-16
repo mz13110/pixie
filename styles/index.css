@@ -20,8 +20,10 @@ body {
     justify-content: center;
     align-items: center;
 
-    border-left: 2px solid var(--accent-1);
-    border-right: 2px solid var(--accent-1);
+    border-left: 2px solid var(--accent-2);
+    border-right: 2px solid var(--accent-2);
+
+    padding: 16px;
 }
 .sidebar {
     max-width: 20%;
@@ -29,6 +31,23 @@ body {
 }
 .section {
     padding: 16px;
+}
+.section-header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.section-header>.bx, .section-header>span {
+    margin-right: 6px;
+}
+.section-header>div {
+    height: 2px;
+    flex-grow: 1;
+    background-color: var(--text-1);
 }
 
 .canvas {
@@ -42,23 +61,5 @@ body {
     background-repeat: repeat;
     background-size: 16px 16px;
 
-    border: 2px solid #6c6c6c;
-}
-
-.palette {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-}
-.color {
-    width: 30px;
-    height: 30px;
-
-    background-color: #00ff00;
-
-    border: 5px solid transparent;
-    cursor: pointer;
-}
-.color[selected] {
-    border: 5px solid var(--selected);
+    border: 2px solid var(--accent-2);
 }

@@ -12,39 +12,57 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles/base.css">
         <link rel="stylesheet" href="styles/index.css">
+        <link rel="prefetch" href="styles/colorpicker.css">
 
+        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
+        <!-- Icons -->
+        <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     </head>
     <body ondragstart="return false">
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
         
-        <div class="lmenu sidebar section">
-            <px-color-picker></px-color-picker>
-            <div class="palette">
-                <div class="color" selected></div>
-                <div class="color"></div>
-                <div class="color"></div>
+        <div class="lmenu sidebar">
+            <div class="section">
+                <div class="section-header">
+                    <span class="bx bxs-color"></span>
+                    <span>Color Picker</span>
+                    <div></div>
+                </div>
+                <px-color-picker></px-color-picker>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <span class="bx bxs-palette"></span>
+                    <span>Palette Manager</span>
+                    <div></div>
+                </div>
+                <px-palette-manager></px-palette-manager>
             </div>
         </div>
         
-        <div class="main section">
+        <div class="main">
             <canvas class="canvas">
         </div>
 
-        <div class="rmenu sidebar section">
+        <div class="rmenu sidebar">
             <div class="toolbox">
             </div>
         </div>
 
         <script src="https://unpkg.com/@popperjs/core@2"></script>
-        <script src="scripts/util.js"></script>
-        <script src="scripts/canvas.js"></script>
-        <script src="scripts/colorpicker.js"></script>
-        <script src="scripts/tool.js"></script>
-        <script src="scripts/index.js" defer></script>
+        <script src="/scripts/util.js"></script>
+        <script src="/scripts/state.js"></script>
+        <script src="/scripts/canvas.js"></script>
+        <script src="/scripts/colorpicker.js"></script>
+        <script src="/scripts/palettemanager.js"></script>
+        <script src="/scripts/tool.js"></script>
+        <script src="/scripts/index.js" defer></script>
     </body>
 </html>
