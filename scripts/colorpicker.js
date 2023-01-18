@@ -266,13 +266,13 @@ class ColorPickerElement extends HTMLElement {
 
     redrawSliders() {
         this.$sliderHue.value = this.hue
-        this.$inputHue.value = this.hue
+        this.$inputHue.value = Math.clamp(Math.round(this.hue), 0, 360)
         this.$sliderHue.style.setProperty("--color", contrastColor(this.hue, 100, 100) === "black" ? "#000000" : "#ffffff")
 
         let contrast = contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff"
 
         this.$sliderSat.value = this.sat
-        this.$inputSat.value = this.sat
+        this.$inputSat.value =  Math.clamp(Math.round(this.sat), 0, 100)
         let c1 = hsv2rgb(this.hue, 0, this.val)
         let c2 = hsv2rgb(this.hue, 100, this.val)
         this.$sliderSat.style.backgroundImage
@@ -280,7 +280,7 @@ class ColorPickerElement extends HTMLElement {
         this.$sliderSat.style.setProperty("--color", (this.sat===0 || this.sat===100) ? "#ffffff" : contrast)
 
         this.$sliderVal.value = this.val
-        this.$inputVal.value = this.val
+        this.$inputVal.value = Math.clamp(Math.round(this.val), 0, 100)
         c1 = hsv2rgb(this.hue, this.sat, 0)
         c2 = hsv2rgb(this.hue, this.sat, 100)
         this.$sliderVal.style.backgroundImage

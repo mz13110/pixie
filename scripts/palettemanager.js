@@ -16,6 +16,9 @@ class PaletteManagerElement extends HTMLElement {
     set selectionID(v) {GlobalState.set("palettemanager.selection.id", v)}
     get selectionID() {return this.#selection.id}
 
+    set selectionColor(v) {GlobalState.set("palettemanager.selection.color", v)}
+    get selectionColor() {return this.#selection.color}
+
     set selectionHue(v) {GlobalState.set("palettemanager.selection.color.hue", v)}
     get selectionHue() {return this.#selection.color.hue}
 
@@ -44,7 +47,7 @@ class PaletteManagerElement extends HTMLElement {
         GlobalState.sub("colorpicker.color", ({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))
 
 
-        GlobalState.sub("palettemanager.colors", (v) => {this.#colors = Object.freeze(v.map((c) => Object.freeze(Object.assign({}, c)))); this.onPaletteChanged()})
+        GlobalState.sub("palettemanager.colors", (v) => {this.#colors = v; this.onPaletteChanged()})
         GlobalState.sub("palettemanager.selection.id", (v) => {this.#selection.id = v; this.onSelectionChanged()})
 
 
@@ -97,7 +100,7 @@ class PaletteManagerElement extends HTMLElement {
         if(this.selectionID === -1) this.$add.dataset.selected = true
         else this.$colors.querySelector(`div[data-id="${this.selectionID}"]`).dataset.selected = true
 
-        this.selectionHue = this.getColor(this.selectionID)
+        this.selectionColor = this.getColor(this.selectionID)
     }
 
     addColor(hue, sat, val) {

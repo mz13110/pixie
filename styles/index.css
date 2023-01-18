@@ -43,6 +43,7 @@ body {
 }
 .section-header>.bx, .section-header>span {
     margin-right: 6px;
+    user-select: none;
 }
 .section-header-line {
     height: 2px;
