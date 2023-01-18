@@ -10,6 +10,8 @@ class PaletteManagerElement extends HTMLElement {
         }
     }
 
+    #mode = "normal" // "normal", "deleting", "editing", or "rearranging"
+
     set colors(v) {GlobalState.set("palettemanager.colors", v)}
     get colors() {return this.#colors} // this.#colors will be a readonly array of readonly colors because it is impossible to watch for changes
 
@@ -27,6 +29,13 @@ class PaletteManagerElement extends HTMLElement {
 
     set selectionVal(v) {GlobalState.set("palettemanager.selection.color.val", v)}
     get selectionVal() {return this.#selection.color.val}
+
+
+    set mode(v) {GlobalState.set("palettemanager.mode", v)}
+    get mode() {return this.#mode}
+
+
+    section
 
     constructor() {
         super()
@@ -62,7 +71,8 @@ class PaletteManagerElement extends HTMLElement {
 
 
         {(({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))(GlobalState.get("colorpicker.color"))}
-        this.selectionID = -1
+
+        this.mode = "normal"
     }
 
     onPickedColorChanged(hue, sat, val) {
@@ -73,6 +83,7 @@ class PaletteManagerElement extends HTMLElement {
 
             this.$add.querySelector("box-icon").setAttribute("color", contrastColor(hue, sat, val) === "black" ? "#000000" : "#ffffff")
         }
+        this.selectionID = -1
     }
     onPaletteChanged() {
         this.$colors.querySelectorAll(".color").forEach((e) => e.remove())
