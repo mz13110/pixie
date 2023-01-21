@@ -35,13 +35,18 @@ class PaletteManagerElement extends HTMLElement {
     get mode() {return this.#mode}
 
 
-    section
+    #$section
+    set $section(v) {this.#$section = v; this.onModeChanged()}
+    get $section() {return this.#$section}
+
+    get $sectionHeader() {return this.$section.querySelector(".section-header")}
+    get $sectionHeaderButtons() {return this.$section.querySelector(".section-header-buttons")}
 
     constructor() {
         super()
 
         this.attachShadow({mode: "open"})
-        this.sr.innerHTML = `
+        this.$sr.innerHTML = `
         <link rel="stylesheet" href="/styles/palettemanager.css" />
         <div class="container">
             <div class="colors">
@@ -50,14 +55,15 @@ class PaletteManagerElement extends HTMLElement {
                 </div>
             </div>
         </div>`
-        this.$add = this.sr.querySelector(".add")
-        this.$colors = this.sr.querySelector(".colors")
+        this.$add = this.$sr.querySelector(".add")
+        this.$colors = this.$sr.querySelector(".colors")
 
         GlobalState.sub("colorpicker.color", ({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))
 
 
         GlobalState.sub("palettemanager.colors", (v) => {this.#colors = v; this.onPaletteChanged()})
         GlobalState.sub("palettemanager.selection.id", (v) => {this.#selection.id = v; this.onSelectionChanged()})
+        GlobalState.sub("palettemanager.mode", (v) => {this.#mode = v; this.onModeChanged()})
 
 
         this.$add.onclick = () => {
@@ -83,7 +89,18 @@ class PaletteManagerElement extends HTMLElement {
 
             this.$add.querySelector("box-icon").setAttribute("color", contrastColor(hue, sat, val) === "black" ? "#000000" : "#ffffff")
         }
-        this.selectionID = -1
+
+        if(this.mode === "editing" && this.selectionID !== -1) {
+            if(this.hasColor(hue, sat, val) && this.selectionID !== this.indexOfColor(hue, sat, val)) {
+                this.removeColor(hue, sat, val)
+                this.selectionID = -1
+            }
+            else {
+                this.setColor(this.selectionID, hue, sat, val)
+                this.selectionID = this.indexOfColor(hue, sat, val)
+            }
+        }
+        else this.selectionID = -1
     }
     onPaletteChanged() {
         this.$colors.querySelectorAll(".color").forEach((e) => e.remove())
@@ -97,10 +114,25 @@ class PaletteManagerElement extends HTMLElement {
             e.dataset.sat = c.sat
             e.dataset.val = c.val
 
-            c = hsv2rgb(c.hue, c.sat, c.val)
-            e.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
+            e.innerHTML = `
+            <div class="delete-button"><box-icon name="trash" type="solid"></box-icon></div>
+            <div class="move-button"><box-icon name="move"></box-icon></div>
+            <div class="edit-button"><box-icon name="edit-alt" type="solid"></box-icon></div>`
 
-            e.onclick = () => this.selectionID = e.dataset.id
+            c = Object.assign(hsv2rgb(c.hue, c.sat, c.val), c) // make both RGB and HSV available
+            e.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
+            console.log( contrastColor(c.hue, c.sat, c.val))
+            e.querySelectorAll("box-icon").forEach((e) => e.setAttribute("color", contrastColor(c.hue, c.sat, c.val) === "black" ? "#000000" : "#ffffff"))
+
+            e.onclick = () => {
+                if(this.mode === "deleting") {
+                    this.removeColorByID(e.dataset.id)
+                    this.selectionID = -1
+                    if(this.colors.length === 0) this.mode = "normal"
+                }
+                else if(this.mode === "rearranging") {}
+                else this.selectionID = e.dataset.id
+            }
 
             this.$colors.insertBefore(e, this.$add)
         }
@@ -113,14 +145,45 @@ class PaletteManagerElement extends HTMLElement {
 
         this.selectionColor = this.getColor(this.selectionID)
     }
+    onModeChanged() {
+        if(this.$section) {
+            this.$sectionHeaderButtons.innerHTML = `
+            <div class="section-header-button palette-manager-header-delete-button"${this.mode === "deleting" ? 'data-active="true"' : ""}>
+                <i class="bx bxs-trash"></i>
+            </div>
+            <div class="section-header-button palette-manager-header-move-button"${this.mode === "rearranging" ? 'data-active="true"' : ""}>
+                <i class="bx bx-move"></i>
+            </div>
+            <div class="section-header-button palette-manager-header-edit-button"${this.mode === "editing" ? 'data-active="true"' : ""}>
+                <i class="bx bxs-edit-alt"></i>
+            </div>`
+            this.$sectionHeaderButtons.querySelector(".palette-manager-header-delete-button").onclick = () => this.mode = this.mode === "deleting" ? "normal" : "deleting"
+            this.$sectionHeaderButtons.querySelector(".palette-manager-header-move-button").onclick = () => this.mode = this.mode === "rearranging" ? "normal" : "rearranging"
+            this.$sectionHeaderButtons.querySelector(".palette-manager-header-edit-button").onclick = () => this.mode = this.mode === "editing" ? "normal" : "editing"
+        }
+        this.$colors.dataset.mode = this.mode
+
+        if(this.mode === "rearranging") {
+            this.sortable = $(this.$colors).sortable() // :( both jquery and sortablejs are bad
+        }
+        else if(this.sortable) this.sortable = this.sortable.destroy()
+    }
 
     addColor(hue, sat, val) {
+        console.log(hue, sat, val)
         if(this.hasColor(hue, sat, val)) return // return if we already have that color
 
         this.colors = this.colors.concat([{hue, sat, val}])
     }
+    setColor(id, hue, sat, val) {
+        if(this.hasColor(hue, sat, val)) this.removeColorByID(id)
+        this.colors = this.colors.slice(0, id).concat({hue, sat, val}, this.colors.slice(id+1))
+    }
     removeColor(hue, sat, val) {
         this.colors = this.colors.filter((c) => c.hue !== hue && e.sat !== sat && e.val !== val)
+    }
+    removeColorByID(id) {
+        this.colors = this.colors.filter((_,i) => i === id)
     }
     hasColor(hue, sat, val) {
         return this.colors.map((c) => c.hue === hue && c.sat === sat && c.val === val).includes(true)
@@ -134,7 +197,7 @@ class PaletteManagerElement extends HTMLElement {
         return this.colors[id]
     }
 
-    get sr() {
+    get $sr() {
         return this.shadowRoot
     }
 }

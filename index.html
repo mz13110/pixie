@@ -10,9 +10,11 @@
         <title>cheese</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="styles/base.css">
-        <link rel="stylesheet" href="styles/index.css">
-        <link rel="prefetch" href="styles/colorpicker.css">
+        <link rel="stylesheet" href="/styles/base.css">
+        <link rel="stylesheet" href="/styles/index.css">
+
+        <link rel="prefetch" href="/styles/colorpicker.css">
+        <link rel="prefetch" href="/styles/palettemanager.css">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,6 +24,9 @@
         <!-- Icons -->
         <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
         <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+        <!-- JQuery -->
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
     </head>
     <body ondragstart="return false">
         <!--[if lt IE 7]>
@@ -31,8 +36,8 @@
         <div class="lmenu sidebar">
             <div class="section">
                 <div class="section-header">
-                    <span class="bx bxs-color"></span>
-                    <span>Color Picker</span>
+                    <span class="section-header-icon bx bxs-color"></span>
+                    <span class="section-header-title">Color Picker</span>
                     <div class="section-header-line"></div>
                     <div class="section-header-buttons"></div>
                 </div>
@@ -40,19 +45,12 @@
             </div>
             <div class="section">
                 <div class="section-header">
-                    <span class="bx bxs-palette"></span>
-                    <span>Palette Manager</span>
+                    <span class="section-header-icon bx bxs-palette"></span>
+                    <span class="section-header-title">Palette Manager</span>
                     <div class="section-header-line"></div>
-                    <div class="section-header-buttons">
-                        <div>
-                            <i class="bx bxs-trash"></i>
-                        </div>
-                        <div>
-                            <i class="bx bx-move"></i>
-                        </div>
-                    </div>
+                    <div class="section-header-buttons"></div>
                 </div>
-                <px-palette-manager class="palette-manager"></px-palette-manager>
+                <px-palette-manager></px-palette-manager>
             </div>
         </div>
 
@@ -67,7 +65,9 @@
 
         <!-- Libraries -->
         <script src="https://unpkg.com/@popperjs/core@2"></script>
-        <script src="https://unpkg.com/sortablejs@1/Sortable.min.js"></script>
+        <!--<script src="https://unpkg.com/sortablejs@1/Sortable.min.js"></script>-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
         <script src="/scripts/util.js"></script>
         <script src="/scripts/state.js"></script>

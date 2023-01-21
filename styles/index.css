@@ -29,6 +29,7 @@ body {
     max-width: 20%;
     flex-grow: 1;
 }
+
 .section {
     padding: 16px;
 }
@@ -41,15 +42,21 @@ body {
     font-size: 16px;
     margin-bottom: 10px;
 }
-.section-header>.bx, .section-header>span {
+.section-header-icon {
     margin-right: 6px;
+}
+.section-header-title {
+    margin-right: 6px;
+    user-select: none;
+}
+.section-header .bx {
     user-select: none;
 }
 .section-header-line {
     height: 2px;
     flex-grow: 1;
     background-color: var(--text-1);
-    margin-right: 2px;
+    margin-right: 3px;
 }
 .section-header-buttons {
     height: 24px;
@@ -57,7 +64,7 @@ body {
     flex-direction: row;
     align-items: center;
 }
-.section-header-buttons>div {
+.section-header-button {
     width: 20px;
     height: 24px;
     cursor: pointer;
@@ -65,7 +72,10 @@ body {
     align-items: center;
     justify-content: center;
 }
-.section-header-buttons>div>.bx {
+.section-header-button[data-active="true"]>i {
+    color: var(--selected);
+}
+.section-header-button>.bx {
     color: #ffffff;
     font-size: 16px;
 }
