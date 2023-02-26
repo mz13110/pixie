@@ -179,7 +179,7 @@ class ColorPickerElement extends HTMLElement {
     updateSatV(x_, y_, isStart) {
         if(!this.changingWheelSatV) return
 
-        let size = window.getComputedStyle(this.$wheelInner).width.slice(0, -2)
+        let size = this.satVComputedSize
         let rect = this.$wheelInnerContainer.getBoundingClientRect()
 
         // pre-transform
@@ -240,7 +240,7 @@ class ColorPickerElement extends HTMLElement {
     redrawSatV() {
         this.$wheelInner.style.transform = `rotate(${this.hue - 45}deg)`
 
-        let size = window.getComputedStyle(this.$wheelSatV).width.slice(0, -2)
+        let size = this.satVComputedSize
 
         this.$wheelSatVHandle.style.left = (this.sat/100*size) + "px"
         this.$wheelSatVHandle.style.top = (this.val/100*size) + "px"
@@ -297,6 +297,10 @@ class ColorPickerElement extends HTMLElement {
         //this.$hexContainer.querySelector(".eyedropper>box-icon").setAttribute("color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
 
         this.$hex.value = rgb2hex(c.r, c.g, c.b)
+    }
+
+    get satVComputedSize() {
+        return this.$wheelInnerContainer.getBoundingClientRect().width/Math.SQRT2 // square inscribed in circle or some shit
     }
 
     onChanged() {
