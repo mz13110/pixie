@@ -1,0 +1,21 @@
+.container {
+    width: 100%;
+    height: 100%;
+}
+
+.tools {
+    display: flex;
+    gap: 5px;
+}
+.tool {
+    padding: 4px;
+    width: 35px;
+    height: 35px;
+}
+.tool[data-selected="true"] {
+    background-color: var(--bg-2);
+}
+.tool>box-icon {
+    width: 100%;
+    height: 100%;
+}

@@ -46,7 +46,8 @@ class PaletteManagerElement extends HTMLElement {
         super()
 
         this.attachShadow({mode: "open"})
-        this.$sr.innerHTML = `
+        this.sr.innerHTML = `
+        <link rel="stylesheet" href="/styles/base.css" />
         <link rel="stylesheet" href="/styles/palettemanager.css" />
         <div class="container">
             <div class="colors">
@@ -55,8 +56,14 @@ class PaletteManagerElement extends HTMLElement {
                 </div>
             </div>
         </div>`
-        this.$add = this.$sr.querySelector(".add")
-        this.$colors = this.$sr.querySelector(".colors")
+        this.$add = this.sr.querySelector(".add")
+        this.$colors = this.sr.querySelector(".colors")
+
+        this.sortable = new Sortable(this.$colors, {
+            animation: 100,
+            disabled: true,
+            ghostClass: "sort-ghost" // disable sorting by default
+        })
 
         GlobalState.sub("colorpicker.color", ({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))
 
@@ -66,7 +73,7 @@ class PaletteManagerElement extends HTMLElement {
         GlobalState.sub("palettemanager.mode", (v) => {this.#mode = v; this.onModeChanged()})
 
 
-        this.$add.onclick = () => {
+        this.$add.onmousedown = () => {
             if(this.selectionID === -1) {// -1 is the color picker
                 let c = GlobalState.get("colorpicker.color")
                 this.addColor(c.hue, c.sat, c.val)
@@ -87,7 +94,9 @@ class PaletteManagerElement extends HTMLElement {
             let c = hsv2rgb(hue, sat, val)
             this.$add.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
 
-            this.$add.querySelector("box-icon").setAttribute("color", contrastColor(hue, sat, val) === "black" ? "#000000" : "#ffffff")
+            c = contrastColor(hue, sat, val) === "black" ? "#000000" : "#ffffff"
+            this.$add.querySelector("box-icon").setAttribute("color", c)
+            this.$add.style.setProperty("--contrast", c)
         }
 
         if(this.mode === "editing" && this.selectionID !== -1) {
@@ -121,10 +130,12 @@ class PaletteManagerElement extends HTMLElement {
 
             c = Object.assign(hsv2rgb(c.hue, c.sat, c.val), c) // make both RGB and HSV available
             e.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
-            console.log( contrastColor(c.hue, c.sat, c.val))
-            e.querySelectorAll("box-icon").forEach((e) => e.setAttribute("color", contrastColor(c.hue, c.sat, c.val) === "black" ? "#000000" : "#ffffff"))
 
-            e.onclick = () => {
+            c = contrastColor(c.hue, c.sat, c.val) === "black" ? "#000000" : "#ffffff"
+            e.querySelectorAll("box-icon").forEach((e) => e.setAttribute("color", c))
+            e.style.setProperty("--contrast", c)
+
+            e.onmousedown = () => {
                 if(this.mode === "deleting") {
                     this.removeColorByID(e.dataset.id)
                     this.selectionID = -1
@@ -163,14 +174,15 @@ class PaletteManagerElement extends HTMLElement {
         }
         this.$colors.dataset.mode = this.mode
 
-        if(this.mode === "rearranging") {
-            this.sortable = $(this.$colors).sortable() // :( both jquery and sortablejs are bad
-        }
-        else if(this.sortable) this.sortable = this.sortable.destroy()
+        // make sure $add is last child
+        this.$add.remove()
+        this.$colors.appendChild(this.$add)
+
+        if(this.mode === "rearranging") this.sortable.option("disabled", false)
+        else this.sortable.option("disabled", true)
     }
 
     addColor(hue, sat, val) {
-        console.log(hue, sat, val)
         if(this.hasColor(hue, sat, val)) return // return if we already have that color
 
         this.colors = this.colors.concat([{hue, sat, val}])
@@ -197,7 +209,7 @@ class PaletteManagerElement extends HTMLElement {
         return this.colors[id]
     }
 
-    get $sr() {
+    get sr() {
         return this.shadowRoot
     }
 }

@@ -1,5 +1,6 @@
-let canvas = new Canvas(32, 32);
-
-document.getElementsByClassName("canvas")[0].replaceWith(canvas.e)
+GlobalState.sub("toolbox.selection", (v) => {
+    document.querySelector("px-canvas").tool = ToolRegistry.get(v)
+})
+if(!GlobalState.get("toolbox.selection")) GlobalState.set("toolbox.selection", "pencil")
 
 document.querySelector("px-palette-manager").$section = document.querySelector("px-palette-manager").parentElement

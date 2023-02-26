@@ -11,7 +11,7 @@ class GlobalState {
         log("𝘀𝗲𝘁", k, "=", v)
 
         k = k.toLowerCase()
-        let o = GlobalState.data
+        let o = this.data
         for(let dir of k.split(".").slice(0, -1)) {
             if(!o[dir]) o = (o[dir] = {})
             else o = o[dir]
@@ -26,13 +26,18 @@ class GlobalState {
             }
         }
     }
-    static get(k) {
+    static get(k, d) {
         log("𝗴𝗲𝘁", k)
         k = k.toLowerCase()
-        let o = GlobalState.data
-        for(let dir of k.split(".").slice(0, -1)) o = o[dir]
-        return o[k.split(".").slice(-1)]
+        let o = this.data
+        for(let dir of k.split(".").slice(0, -1)) {
+            if(typeof o !== "object") return d
+            o = o[dir]
+        }
+        if(typeof o !== "object") return d
+        return o[k.split(".").slice(-1)] ?? d
     }
+
     static sub(k, cb) {
         if(!Array.isArray(k)) k = [k]
         k.map((t) => {

@@ -15,6 +15,7 @@
 
         <link rel="prefetch" href="/styles/colorpicker.css">
         <link rel="prefetch" href="/styles/palettemanager.css">
+        <link rel="prefetch" href="/styles/toolbox.css">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +29,7 @@
         <!-- JQuery -->
         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
     </head>
-    <body ondragstart="return false">
+    <body>
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -55,17 +56,33 @@
         </div>
 
         <div class="main">
-            <canvas class="canvas">
+            <px-canvas></px-canvas>
         </div>
 
         <div class="rmenu sidebar">
-            <div class="toolbox">
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-header-icon bx bxs-briefcase"></span>
+                    <span class="section-header-title">Toolbox</span>
+                    <div class="section-header-line"></div>
+                    <div class="section-header-buttons"></div>
+                </div>
+                <px-toolbox></px-toolbox>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-header-icon bx bxs-wrench"></span>
+                    <span class="section-header-title">Tool Info</span>
+                    <div class="section-header-line"></div>
+                    <div class="section-header-buttons"></div>
+                </div>
+                <px-tool-info></px-tool-info>
             </div>
         </div>
 
         <!-- Libraries -->
         <script src="https://unpkg.com/@popperjs/core@2"></script>
-        <!--<script src="https://unpkg.com/sortablejs@1/Sortable.min.js"></script>-->
+        <script src="https://unpkg.com/sortablejs@1/Sortable.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
@@ -75,6 +92,8 @@
         <script src="/scripts/colorpicker.js"></script>
         <script src="/scripts/palettemanager.js"></script>
         <script src="/scripts/tool.js"></script>
+        <script src="/scripts/tools.js"></script>
+        <script src="/scripts/toolbox.js"></script>
         <script src="/scripts/index.js" defer></script>
     </body>
 </html>

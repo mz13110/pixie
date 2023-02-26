@@ -5,7 +5,8 @@
 
 :root {
     --bg-1: #252525;
-    --bg-2: #2c2c2c;
+    --bg-2: #2a2a2a;
+    --bg-3: #3b3b3b;
 
     --text-1: #ffffff;
     --text-2: #000000;
@@ -21,6 +22,11 @@
     color: var(--text-1);
 }
 
+* {
+    box-sizing: border-box;
+
+}
+
 input[type="date"],
 input[type="datetime-local"],
 input[type="email"],
@@ -34,7 +40,7 @@ input[type="time"],
 input[type="url"],
 input[type="week"] {
     appearance: none;
-    background-color: var(--bg-2);
+    background-color: var(--bg-3);
     border: 1px solid var(--accent-2);
     font-family: 'Inter', sans-serif;
     color: var(--text-1);
@@ -42,11 +48,16 @@ input[type="week"] {
 }
 .button {
     appearance: none;
-    background-color: var(--bg-2);
+    background-color: var(--bg-3);
     border: 1px solid var(--accent-2);
     font-family: 'Inter', sans-serif;
     color: var(--text-1);
     border-radius: 5px;
+
+    cursor: pointer;
+}
+.button[data-active="true"] {
+    background-color: var(--bg-2);
 }
 
 input[type="date"]:focus,

@@ -21,8 +21,9 @@ class ColorPickerElement extends HTMLElement {
             mode: "open"
         })
         this.sr.innerHTML = `
+        <link rel="stylesheet" href="/styles/base.css" />
         <link rel="stylesheet" href="styles/colorpicker.css" />
-        <div class="container">
+        <div class="container" ondragstart="return false">
             <div class="wheel-container">
                 <div class="wheel"></div>
                 <div class="wheel-pointer">
@@ -295,10 +296,7 @@ class ColorPickerElement extends HTMLElement {
         this.$hexContainer.style.setProperty("--color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
         //this.$hexContainer.querySelector(".eyedropper>box-icon").setAttribute("color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
 
-        this.$hex.value = "#"
-            + (c.r<16?"0":"") + c.r.toString(16)
-            + (c.g<16?"0":"") + c.g.toString(16)
-            + (c.b<16?"0":"") + c.b.toString(16)
+        this.$hex.value = rgb2hex(c.r, c.g, c.b)
     }
 
     onChanged() {

@@ -1,37 +1,106 @@
-class Canvas {
-    constructor(w, h) {
-        let e = document.createElement("canvas")
-        this.e = e
-        e.width = Math.ceil(w)
-        e.height = Math.ceil(h)
-        e.classList.add("canvas")
+class CanvasElement extends HTMLElement {
+    #width = 32
+    #height = 32
 
-        let drawing = false
+    get width() {return this.#width}
+    set width(v) {GlobalState.set("canvas.size.w", v)}
 
-        let ctx = e.getContext("2d")
+    get height() {return this.#height}
+    set height(v) {GlobalState.set("canvas.size.h", v)}
 
-        function set(x, y) {
-            ctx.fillStyle = e.getAttribute("fill")
-            ctx.fillRect(Math.floor(x), Math.floor(y), 1, 1)
+    // cache picked color as hex because it is used alot
+    #selectedColor = "#ffffff"
+    get selectedColor() {return this.#selectedColor}
+
+    constructor() {
+        super()
+
+        this.attachShadow({mode: "open"})
+
+        this.sr.innerHTML = `
+        <link rel="stylesheet" href="/styles/base.css" />
+        <link rel="stylesheet" href="styles/canvas.css" />
+        <div class="container">
+            <div class="canvas-container">
+                <canvas class="display-canvas"></canvas>
+                <canvas class="preview-canvas"></canvas>
+            </div>
+        </div>`
+
+        GlobalState.sub("canvas.size", (v) => {this.#width = v.w; this.#height = v.h; this.onResized()})
+        GlobalState.sub("palettemanager.selection.color", (v) => {this.#selectedColor = hsv2hex(v.hue, v.sat, v.val)})
+
+        this.$canvasContainer = this.sr.querySelector(".canvas-container")
+        this.$canvas = this.sr.querySelector(".display-canvas")
+        this.$preview = this.sr.querySelector(".preview-canvas")
+        this.ctx = this.$canvas.getContext("2d")
+        this.previewCtx = this.$preview.getContext("2d")
+
+        this.$canvas.onmousedown = (ev) => {
+            let {x, y} = this.offsetToXY(ev.offsetX, ev.offsetY)
+            if(this.tool) this.tool.onDown(this, x, y)
         }
-        function erase(x, y) {
-            ctx.clearRect(Math.floor(x), Math.floor(y), 1, 1)
+        this.$canvas.onmousemove = (ev) => {
+            let {x, y} = this.offsetToXY(ev.offsetX, ev.offsetY)
+            if(this.tool) this.tool.onMove(this, x, y)
+        }
+        this.$canvas.onmouseup = (ev) => {
+            let {x, y} = this.offsetToXY(ev.offsetX, ev.offsetY)
+            if(this.tool) this.tool.onUp(this, x, y)
+        }
+        this.$canvas.onmouseleave = (ev) => {
+            let {x, y} = this.offsetToXY(ev.offsetX, ev.offsetY)
+            if(this.tool) this.tool.onUp(this, x, y)
         }
 
-        e.onmousedown = (ev) => {
-            let rect = e.getBoundingClientRect()
-            drawing = true
-            set((e.width / rect.width) * ev.offsetX, (e.height / rect.height) * ev.offsetY)
-        }
-        e.onmousemove = (ev) => {
-            if(!drawing) return
-            let rect = e.getBoundingClientRect()
-            set((e.width / rect.width) * ev.offsetX, (e.height / rect.height) * ev.offsetY)
-        }
-        e.onmouseup = () => drawing = false
-        e.onmouseleave = () => drawing = false
+        this.$canvas.oncontextmenu = () => false // disable right click context menu
 
-        e.oncontextmenu = () => false // disable right click context menu
+        this.width = 32
+        this.height = 64
+    }
+
+    getRGB(x, y) {
+        let c = this.ctx.getImageData(x, y, 1, 1, {
+            colorSpace: "srgb"
+        }).data
+        return {r: c.data[0], g: c.data[1], b: c.data[2], a: c.data[3]}
+    }
+    set(x, y, c) {
+        this.ctx.fillStyle = c ?? this.selectedColor
+        this.ctx.fillRect(Math.floor(x), Math.floor(y), 1, 1)
+    }
+    del(x, y) {
+        this.ctx.clearRect(Math.floor(x), Math.floor(y), 1, 1)
+    }
+    rset(x, y, w, h, c) {
+        this.ctx.fillStyle = c ?? this.selectedColor
+        this.ctx.fillRect(Math.floor(x), Math.floor(y), w, h)
+    }
+    rdel(x, y, w, h) {
+        this.ctx.clearRect(Math.floor(x), Math.floor(y), w, h)
+    }
+
+    offsetToXY(x, y) {
+        let rect = this.$canvas.getBoundingClientRect()
+        return {
+            x: Math.floor((this.width / rect.width) * x),
+            y: Math.floor((this.height / rect.height) * y)
+        }
+    }
+
+    onResized() {
+        this.$canvasContainer.style.aspectRatio = `${this.width} / ${this.height}`
+
+        this.$canvas.width = this.width
+        this.$canvas.height = this.height
+
+        this.$preview.width = this.width
+        this.$preview.height = this.height
+    }
+
+    get sr() {
+        return this.shadowRoot
     }
 }
 
+customElements.define("px-canvas", CanvasElement)
