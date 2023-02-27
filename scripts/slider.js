@@ -13,6 +13,9 @@ class SliderElement extends HTMLElement {
     set value(v) {this.setAttribute("value", v)}
     get value() {return this.getAttribute("value")}
 
+    set name(v) {this.setAttribute("name", v)}
+    get name() {return this.getAttribute("name")}
+
     constructor() {
         super()
 
@@ -31,7 +34,7 @@ class SliderElement extends HTMLElement {
             </div>
 
             <div class="text">
-                <div class="label">Threshold</div>
+                <div class="label"></div>
                 <input type="number" class="number no-base-style">
             </div>
         </div>
@@ -73,11 +76,6 @@ class SliderElement extends HTMLElement {
 
         linkEventAttr(this, "input", "oninput")
         linkEventAttr(this, "change", "onchange")
-
-        this.min = 0
-        this.max = Infinity
-        this.step = 1
-        this.value = 0
     }
     connectedCallback() {
         this.min = 0
@@ -87,6 +85,10 @@ class SliderElement extends HTMLElement {
     }
 
     attributeChangedCallback(k, old, v) {
+        if(k === "name") {
+            this.$label.innerText = k
+            return
+        }
         switch(k) {
             case "min":
             case "max":
@@ -150,7 +152,7 @@ class SliderElement extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["min", "max", "step", "value"]
+        return ["min", "max", "step", "value", "name"]
     }
 
     get sr() {
