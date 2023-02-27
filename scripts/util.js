@@ -36,7 +36,9 @@ window.linkEventAttr = (target, name, attr) => {
                 get: (_, k) => k === "event" ? event : globalThis[k],
                 has: (_, k) => k === "event" || k in globalThis,
                 set: (_, k, v) => {k === "event" ? (event = v) : (globalThis[k] = v)}
-            })) {f.bind(target)()}
+            })) {
+                f.bind(target)(event)
+            }
         }
 
         if(attr in target && typeof target[attr] === "function") {

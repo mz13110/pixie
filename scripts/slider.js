@@ -1,3 +1,5 @@
+const INFINITY_EQUIVALENT = 10000
+
 class SliderElement extends HTMLElement {
     set min(v) {this.setAttribute("min", v)}
     get min() {return this.getAttribute("min")}
@@ -28,8 +30,10 @@ class SliderElement extends HTMLElement {
                 <div></div>
             </div>
 
-            <div class="label">Threshold</div>
-            <div class="number">234243243</div>
+            <div class="text">
+                <div class="label">Threshold</div>
+                <input type="number" class="number no-base-style">
+            </div>
         </div>
         `
 
@@ -39,8 +43,36 @@ class SliderElement extends HTMLElement {
         this.$number = this.sr.querySelector(".number")
 
         this.$slider.oninput = (e) => {
+            e.stopPropagation() // the event might bubble out shadow root
             this.value = this.$slider.value
         }
+        this.$slider.onchange = (e) => {
+            e.stopPropagation() // the event might bubble out shadow root
+            this.dispatchEvent(new Event("change"))
+        }
+
+        this.$number.oninput = (e) => {
+            e.stopPropagation() // the event might bubble out shadow root
+
+            let n = this.$number.value
+            this.value = this.$number.value
+            if(this.value !== n) {// change was reverted
+                console.log("reverted")
+                this.$number.value = n // revert the reversion because techinically we are still editing
+            }
+        }
+        this.$number.onchange = (e) => {
+            e.stopPropagation() // the event might bubble out shadow root
+
+            this.value = Math.clamp(
+                this.value,
+                this.min == Infinity ? INFINITY_EQUIVALENT : this.min,
+                this.max == Infinity ? INFINITY_EQUIVALENT : this.max) // use == instead of === because this.max might be a string
+            this.dispatchEvent(new Event("change"))
+        }
+
+        linkEventAttr(this, "input", "oninput")
+        linkEventAttr(this, "change", "onchange")
 
         this.min = 0
         this.max = Infinity
@@ -60,13 +92,13 @@ class SliderElement extends HTMLElement {
             case "max":
             case "step":
             case "value":
-                try {
-                    v = parseFloat(v)
-                }
-                catch {
+                if(Number.isNaN(v = parseFloat(v))) {
                     if(v == Infinity) v = Infinity
                     else if(v == -Infinity) v = -Infinity
-                    else throw TypeError(`cannot parse ${v} as a number or infinity`)
+                    else {
+                        this.setAttribute(k, old)
+                        throw TypeError(`cannot parse ${v} as a number or infinity`)
+                    }
                 }
                 break
         }
@@ -92,7 +124,22 @@ class SliderElement extends HTMLElement {
                 this.$slider[k] = v
                 break
             case "value":
-                console.log(v)
+                if(v !== parseFloat(old)) this.dispatchEvent(new Event("input"))
+
+                // resize the number input because they wont do it for me
+                let e = document.createElement("div") // measure the needed size
+                e.innerText = v
+                e.style.visibility = "hidden"
+                e.style.pointerEvents = "none"
+                e.style.position = "absolute"
+                e.style.overflow = "hidden"
+                e.classList.add("number")
+                this.$container.appendChild(e)
+                this.$number.style.width = (e.getBoundingClientRect().width)+"px" // apply the size
+                e.remove() // clean up
+
+                this.$number.value = v
+
                 let p
                 if(v <= this.$slider.min) p = 0
                 if(v >= this.$slider.max) p = 100
