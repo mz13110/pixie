@@ -26,8 +26,6 @@ class SliderElement extends HTMLElement {
             mode: "open"
         })
         this.sr.innerHTML = `
-        <link rel="stylesheet" href="/styles/base.css" />
-        <link rel="stylesheet" href="/styles/slider.css" />
         <div class="container">
             <input class="slider no-base-style" type="range">
             <div class="slider-bg">
@@ -40,6 +38,8 @@ class SliderElement extends HTMLElement {
             </div>
         </div>
         `
+        getCSS("base").then((css)=>this.sr.appendChild(css))
+        getCSS("slider").then((css)=>this.sr.appendChild(css))
 
         this.$container = this.sr.querySelector(".container")
         this.$slider = this.sr.querySelector(".slider")

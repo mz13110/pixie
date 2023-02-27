@@ -9,12 +9,11 @@ class ToolboxElement extends HTMLElement {
 
         this.attachShadow({mode: "open"})
         this.sr.innerHTML = `
-        <link rel="stylesheet" href="/styles/base.css" />
-        <link rel="stylesheet" href="/styles/toolbox.css" />
-
         <div class="container">
             <div class="tools"></div>
         </div>`
+        getCSS("base").then((css)=>this.sr.appendChild(css))
+        getCSS("toolbox").then((css)=>this.sr.appendChild(css))
 
         GlobalState.sub("toolbox.selection", (v) => {this.#selection = v; this.onSelectionChanged()})
 

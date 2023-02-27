@@ -21,8 +21,6 @@ class ColorPickerElement extends HTMLElement {
             mode: "open"
         })
         this.sr.innerHTML = `
-        <link rel="stylesheet" href="/styles/base.css" />
-        <link rel="stylesheet" href="/styles/colorpicker.css" />
         <div class="container" ondragstart="return false">
             <div class="wheel-container">
                 <div class="wheel"></div>
@@ -68,6 +66,8 @@ class ColorPickerElement extends HTMLElement {
                 </div>
             </div>
         </div>`
+        getCSS("base").then((css)=>this.sr.appendChild(css))
+        getCSS("colorpicker").then((css)=>this.sr.appendChild(css))
 
         this.$container = this.sr.querySelector(".container")
         this.$wheelPointer = this.sr.querySelector(".wheel-pointer")

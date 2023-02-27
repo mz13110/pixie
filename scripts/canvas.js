@@ -18,14 +18,14 @@ class CanvasElement extends HTMLElement {
         this.attachShadow({mode: "open"})
 
         this.sr.innerHTML = `
-        <link rel="stylesheet" href="/styles/base.css" />
-        <link rel="stylesheet" href="styles/canvas.css" />
         <div class="container">
             <div class="canvas-container">
                 <canvas class="display-canvas"></canvas>
                 <canvas class="preview-canvas"></canvas>
             </div>
         </div>`
+        getCSS("base").then((css)=>this.sr.appendChild(css))
+        getCSS("canvas").then((css)=>this.sr.appendChild(css))
 
         GlobalState.sub("canvas.size", (v) => {this.#width = v.w; this.#height = v.h; this.onResized()})
         GlobalState.sub("palettemanager.selection.color", (v) => {this.#selectedColor = hsv2hex(v.hue, v.sat, v.val)})

@@ -47,8 +47,6 @@ class PaletteManagerElement extends HTMLElement {
 
         this.attachShadow({mode: "open"})
         this.sr.innerHTML = `
-        <link rel="stylesheet" href="/styles/base.css" />
-        <link rel="stylesheet" href="/styles/palettemanager.css" />
         <div class="container">
             <div class="colors">
                 <div class="add" data-id="-1">
@@ -56,6 +54,9 @@ class PaletteManagerElement extends HTMLElement {
                 </div>
             </div>
         </div>`
+        getCSS("base").then((css)=>this.sr.appendChild(css))
+        getCSS("palettemanager").then((css)=>this.sr.appendChild(css))
+
         this.$add = this.sr.querySelector(".add")
         this.$colors = this.sr.querySelector(".colors")
 

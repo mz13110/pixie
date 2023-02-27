@@ -1,11 +1,11 @@
-let cache = {}
+window.styleCache = {}
 
 window.getCSS = async (path) => {
     let css
-    if(path in cache) css = cache[path]
+    if(path in styleCache) css = styleCache[path]
     else {
         css = await (await fetch(`/styles/${path}.css`)).text()
-        cache[path] = css
+        styleCache[path] = css
     }
 
     let e = document.createElement("style")

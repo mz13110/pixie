@@ -18,9 +18,9 @@ class ToolInfoElement extends HTMLElement {
             mode: "open"
         })
         this.sr.innerHTML = `
-        <link rel="stylesheet" href="/styles/base.css" />
-        <link rel="stylesheet" href="/styles/toolinfo.css" />
         <div class="container"></div>`
+        getCSS("base").then((css)=>this.sr.appendChild(css))
+        getCSS("toolinfo").then((css)=>this.sr.appendChild(css))
 
         this.$container = this.sr.querySelector(".container")
     }
