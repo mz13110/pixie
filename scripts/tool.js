@@ -19,10 +19,17 @@ class Tool {
 
         this.schema = schema ?? {}
         for(let [k, i] of Object.entries(this.schema)) {
-            GlobalState.set(`tools.${this.id}.${k}`, i.default)
+            this.setProp(`tools.${this.id}.${k}`, GlobalState.get(`tools.${this.id}.${k}`) ?? i.default)
         }
 
         GlobalState.sub(`tools.${this.id}`, (v) => {this.#props = v; this.onPropsChanged()})
+    }
+
+    setProp(k, v) {
+        GlobalState.set(`tools.${this.id}.${k}`, v)
+    }
+    getProp(k) {
+        return this.props[k]
     }
 
     onPropsChanged() {}

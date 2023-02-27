@@ -35,23 +35,16 @@ class ToolInfoElement extends HTMLElement {
         for(let [k, i] of Object.entries(this.tool.schema)) {
             switch(i.type) {
                 case "slider":
-                    let c = document.createElement("div")
-                    c.classList.add("prop")
-
-                    let e = document.createElement("div")
-                    e.classList.add("label")
-                    e.innerText = i.name
-                    c.appendChild(e)
-
-                    e = document.createElement("input", {is: "px-slider"})
+                    let e = document.createElement("px-slider")
                     e.classList.add("slider")
-                    e.type = "range"
-                    e.min = i.min === -Infinity ? -100 : (i.min ?? -100)
-                    e.max = i.max === Infinity ? 100 : (i.max ?? 100)
+                    e.name = i.name
+                    e.min = i.min ?? 0
+                    e.max = i.max ?? 100
                     e.step = i.step ?? 1
-                    c.appendChild(e)
+                    e.value = i.default
 
-                    this.$container.appendChild(c)
+                    e.oninput = () => this.tool.setProp(k, e.value)
+                    this.$container.appendChild(e)
             }
         }
     }
