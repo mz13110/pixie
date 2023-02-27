@@ -26,7 +26,7 @@
 }
 .slider::-webkit-slider-thumb {
     appearance: none;
-    width: 2px;
+    width: 0px;
     height: 25px;
 }
 
@@ -51,7 +51,7 @@
     content: "";
     display: block;
     position: absolute;
-    right: 0px;
+    right: -1px;
     top: -2px;
     background-color: var(--accent-2);
 }

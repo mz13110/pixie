@@ -78,10 +78,10 @@ class SliderElement extends HTMLElement {
         linkEventAttr(this, "change", "onchange")
     }
     connectedCallback() {
-        this.min = 0
-        this.max = Infinity
-        this.step = 1
-        this.value = 50
+        this.min = this.min ?? 0
+        this.max = this.max ?? Infinity
+        this.step = this.step ?? 1
+        this.value = this.value ?? 50
     }
 
     attributeChangedCallback(k, old, v) {
@@ -135,6 +135,7 @@ class SliderElement extends HTMLElement {
                 this.$number.style.width = (e.getBoundingClientRect().width)+"px" // apply the size
                 e.remove() // clean up
 
+                this.$slider.value = v
                 this.$number.value = v
 
                 let p
