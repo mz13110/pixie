@@ -3,7 +3,8 @@
     src: url('assets/fa-solid-sharp.woff2') format("woff2");
 }
 
-:root {
+:root,
+:host {
     --bg-1: #252525;
     --bg-2: #2a2a2a;
     --bg-3: #3b3b3b;
@@ -18,60 +19,75 @@
 
     --selected: #099cff;
 
-    font-family: 'Inter', sans-serif;
+    font-family: 'Barlow', sans-serif;
     color: var(--text-1);
 }
 
 * {
     box-sizing: border-box;
-
 }
 
-input[type="date"],
-input[type="datetime-local"],
-input[type="email"],
-input[type="month"],
-input[type="number"],
-input[type="password"],
-input[type="search"],
-input[type="tel"],
-input[type="text"],
-input[type="time"],
-input[type="url"],
-input[type="week"] {
+input[type="date"]:not(.no-base-style),
+input[type="datetime-local"]:not(.no-base-style),
+input[type="email"]:not(.no-base-style),
+input[type="month"]:not(.no-base-style),
+input[type="number"]:not(.no-base-style),
+input[type="password"]:not(.no-base-style),
+input[type="search"]:not(.no-base-style),
+input[type="tel"]:not(.no-base-style),
+input[type="text"]:not(.no-base-style),
+input[type="time"]:not(.no-base-style),
+input[type="url"]:not(.no-base-style),
+input[type="week"]:not(.no-base-style) {
     appearance: none;
     background-color: var(--bg-3);
     border: 1px solid var(--accent-2);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Barlow', sans-serif;
     color: var(--text-1);
     border-radius: 5px;
 }
-.button {
+.button:not(.no-base-style) {
     appearance: none;
     background-color: var(--bg-3);
     border: 1px solid var(--accent-2);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Barlow', sans-serif;
     color: var(--text-1);
     border-radius: 5px;
 
     cursor: pointer;
 }
-.button[data-active="true"] {
+.button[data-active="true"]:not(.no-base-style) {
     background-color: var(--bg-2);
 }
 
-input[type="date"]:focus,
-input[type="datetime-local"]:focus,
-input[type="email"]:focus,
-input[type="month"]:focus,
-input[type="number"]:focus,
-input[type="password"]:focus,
-input[type="search"]:focus,
-input[type="tel"]:focus,
-input[type="text"]:focus,
-input[type="time"]:focus,
-input[type="url"]:focus,
-input[type="week"]:focus {
+input[type="date"]:focus:not(.no-base-style),
+input[type="datetime-local"]:focus:not(.no-base-style),
+input[type="email"]:focus:not(.no-base-style),
+input[type="month"]:focus:not(.no-base-style),
+input[type="number"]:focus:not(.no-base-style),
+input[type="password"]:focus:not(.no-base-style),
+input[type="search"]:focus:not(.no-base-style),
+input[type="tel"]:focus:not(.no-base-style),
+input[type="text"]:focus:not(.no-base-style),
+input[type="time"]:focus:not(.no-base-style),
+input[type="url"]:focus:not(.no-base-style),
+input[type="week"]:focus:not(.no-base-style) {
     border: 1px solid var(--selected);
     outline: none;
+}
+
+input[type="range"]:not(.no-base-style) {
+    appearance: none;
+    border: 1px solid var(--accent-2);
+    background-color: var(--bg-3);
+    border-radius: 100vh;
+    height: 10px;
+}
+input[type="range"]:not(.no-base-style)::-webkit-slider-thumb {
+    appearance: none;
+    border: 1px solid var(--accent-2);
+    background-color: var(--bg-2);
+    border-radius: 100vh;
+    height: 15px;
+    width: 15px;
 }
