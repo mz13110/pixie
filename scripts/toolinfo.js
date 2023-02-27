@@ -41,7 +41,7 @@ class ToolInfoElement extends HTMLElement {
                     e.min = i.min ?? 0
                     e.max = i.max ?? 100
                     e.step = i.step ?? 1
-                    e.value = i.default
+                    e.value = this.tool.getProp(k) ?? i.default
 
                     e.oninput = () => this.tool.setProp(k, e.value)
                     this.$container.appendChild(e)
