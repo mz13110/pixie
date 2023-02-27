@@ -57,7 +57,6 @@ class SliderElement extends HTMLElement {
 
         this.$number.oninput = (e) => {
             e.stopPropagation() // the event might bubble out shadow root
-            console.log(this.$number.value)
             let n = this.$number.value
             this.value = this.$number.value
             if(this.value !== n) {// change was reverted
