@@ -22,7 +22,7 @@ class ColorPickerElement extends HTMLElement {
         })
         this.sr.innerHTML = `
         <link rel="stylesheet" href="/styles/base.css" />
-        <link rel="stylesheet" href="styles/colorpicker.css" />
+        <link rel="stylesheet" href="/styles/colorpicker.css" />
         <div class="container" ondragstart="return false">
             <div class="wheel-container">
                 <div class="wheel"></div>
@@ -51,19 +51,19 @@ class ColorPickerElement extends HTMLElement {
                     </div>
                     -->
                 </div>
-                <div class="slider-container">
+                <div class="slider-container no-">
                     <span class="slider-label">H</span>
-                    <input type="range" class="slider slider-hue" min="0" max="360" />
+                    <input type="range" class="slider slider-hue no-base-style" min="0" max="360" />
                     <input type="number" class="input input-hue" min="0" max="360" />
                 </div>
                 <div class="slider-container">
                     <span class="slider-label">S</span>
-                    <input type="range" class="slider slider-sat" min="0" max="100" />
+                    <input type="range" class="slider slider-sat no-base-style" min="0" max="100" />
                     <input type="number" class="input input-sat" min="0" max="100" />
                 </div>
                 <div class="slider-container">
                     <span class="slider-label">V</span>
-                    <input type="range" class="slider slider-val" min="0" max="100" />
+                    <input type="range" class="slider slider-val no-base-style" min="0" max="100" />
                     <input type="number" class="input input-val" min="0" max="100" />
                 </div>
             </div>

@@ -10,6 +10,8 @@ body {
     flex-direction: row;
 
     background-color: var(--bg-1);
+
+    overflow: hidden;
 }
 
 .main {
@@ -31,7 +33,7 @@ px-canvas {
 }
 
 .sidebar {
-    max-width: 20%;
+    max-width: min(25%, 400px);
     flex-grow: 1;
 }
 
@@ -53,6 +55,10 @@ px-canvas {
 .section-header-title {
     margin-right: 6px;
     user-select: none;
+
+    /* the barlow font is too much down; move the title up so it is centered */
+    position: relative;
+    bottom: 1px;
 }
 .section-header .bx {
     user-select: none;

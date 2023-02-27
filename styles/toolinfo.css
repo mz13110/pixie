@@ -1,0 +1,9 @@
+.prop {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 14px;
+}
+.prop .label {
+    margin-right: 5px;
+}

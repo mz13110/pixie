@@ -29,7 +29,7 @@ class ToolboxElement extends HTMLElement {
         e.classList.add("button", "tool")
         e.dataset.id = tool.id
         e.innerHTML = `
-        <box-icon type="${tool.icon.split(";")[0]}" name="${tool.icon.split(";")[1]}" color="#ffffff"></box-icon>`
+        <box-icon type="${iconClass2Type(tool.icon)}" name="${iconClass2Name(tool.icon)}" color="#ffffff"></box-icon>`
         e.onclick = () => {
             this.selection = e.dataset.id
         }

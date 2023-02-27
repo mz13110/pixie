@@ -12,12 +12,15 @@ class Tool {
     get props() {return this.#props}
     set props(v) {GlobalState.set(`tools.${this.id}`, v)}
 
-    constructor(name, id, icon, props) {
-        this.#name = name
-        this.#id = id
-        this.#icon = icon
+    constructor(name, id, icon, schema) {
+        this.#name = name ?? "untitled tool"
+        this.#id = id ?? [...Array(16)].map(()=>Math.floor(Math.random()*16).toString(16)).join("")
+        this.#icon = icon ?? "bxs-wrench"
 
-        this.props = Object.assign(structuredClone(GlobalState.get(`tools.${this.id}`, {})), props)
+        this.schema = schema ?? {}
+        for(let [k, i] of Object.entries(this.schema)) {
+            GlobalState.set(`tools.${this.id}.${k}`, i.default)
+        }
 
         GlobalState.sub(`tools.${this.id}`, (v) => {this.#props = v; this.onPropsChanged()})
     }

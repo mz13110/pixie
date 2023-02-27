@@ -28,6 +28,24 @@ window.linkInputToSlider = (slider, input) => {
         slider.dispatchEvent(new Event("change"))
     })
 }
+window.linkEventAttr = (target, name, attr) => {
+    target.addEventListener(name, (e) => {
+        // use with(Proxy){} to inject property named "event"
+        function inject(event, target, f) {
+            with(new Proxy({}, {
+                get: (_, k) => k === "event" ? event : globalThis[k],
+                has: (_, k) => k === "event" || k in globalThis,
+                set: (_, k, v) => {k === "event" ? (event = v) : (globalThis[k] = v)}
+            })) {f.bind(target)()}
+        }
+
+        if(attr in target && typeof target[attr] === "function") {
+            inject(e, target, target[attr])
+        }
+        inject(e, target, Function(target.getAttribute(attr)))
+    })
+}
+
 window.contrastColor = (hue, sat, val) => {
     let c = hsv2rgb(hue, sat, val)
     return (c.r*0.299 + c.g*0.587 + c.b*0.114) > 145 ? "black" : "white"
@@ -46,6 +64,8 @@ window.customLogger = (namespace) => {
     }
     return console.log.bind(window, `%c${namespace}`, `color: ${contrastColorRGB(...(h[c]))==="black" ? "#000000" : "#ffffff"}; background-color: ${c}; padding: 2px;`)
 }
+window.iconClass2Type = (icon) => icon.startsWith("bxs") ? "solid" : icon.startsWith("bxl") ? "logo" : "regular"
+window.iconClass2Name = (icon) => icon.split("-").slice(1).join("-")
 
 Object.deepFreeze = function deepFreeze(o) {
     Object.freeze(o)
