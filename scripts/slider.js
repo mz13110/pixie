@@ -1,4 +1,5 @@
 const INFINITY_EQUIVALENT = 10000
+const SLIDER_INFINITY_EQUIVALENT = 1000
 
 class SliderElement extends HTMLElement {
     set min(v) {this.setAttribute("min", v)}
@@ -56,7 +57,7 @@ class SliderElement extends HTMLElement {
 
         this.$number.oninput = (e) => {
             e.stopPropagation() // the event might bubble out shadow root
-
+            console.log(this.$number.value)
             let n = this.$number.value
             this.value = this.$number.value
             if(this.value !== n) {// change was reverted
@@ -86,7 +87,7 @@ class SliderElement extends HTMLElement {
 
     attributeChangedCallback(k, old, v) {
         if(k === "name") {
-            this.$label.innerText = k
+            this.$label.innerText = v
             return
         }
         switch(k) {
@@ -108,18 +109,13 @@ class SliderElement extends HTMLElement {
         switch(k) {
             case "min":
             case "max":
-                if(typeof v !== "number") {
-                    this[k] = Infinity
-                    break
-                }
-                if(Number.isNaN(v)) throw new TypeError("cannot be NaN")
                 // slider ranges cannot be infinity
                 if(v === -Infinity) {
-                    this.$slider.min = -100
+                    this.$slider[k] = -SLIDER_INFINITY_EQUIVALENT
                     break
                 }
                 else if(v === Infinity) {
-                    this.$slider.max = 100
+                    this.$slider[k] = SLIDER_INFINITY_EQUIVALENT
                     break
                 }
 
