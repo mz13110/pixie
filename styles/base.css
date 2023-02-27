@@ -1,8 +1,3 @@
-@font-face {
-    font-family: 'Font Awesome Solid Sharp';
-    src: url('assets/fa-solid-sharp.woff2') format("woff2");
-}
-
 :root,
 :host {
     --bg-1: #252525;
