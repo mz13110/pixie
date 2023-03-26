@@ -6,14 +6,34 @@ body {
 
     margin: 0px;
 
-    display: flex;
-    flex-direction: row;
 
     background-color: var(--bg-1);
 
     overflow: hidden;
 }
 
+.menubar {
+    position: static;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 30px;
+
+    display: flex;
+    flex-direction: row;
+
+    user-select: none;
+
+    background-color: var(--bg-3);
+}
+
+.main-container {
+    width: 100vw;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+}
 .main {
     flex-grow: 1;
 
@@ -22,8 +42,8 @@ body {
     justify-content: center;
     align-items: center;
 
-    border-left: 2px solid var(--accent-2);
-    border-right: 2px solid var(--accent-2);
+    border-left: 1px solid var(--accent-2);
+    border-right: 1px solid var(--accent-2);
 
     padding: 16px;
 }

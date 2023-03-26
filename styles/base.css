@@ -9,6 +9,8 @@
     --text-1: #ffffff;
     --text-2: #000000;
 
+    --text-disabled: #969696;
+
     --accent-1: #6c6c6c;
     --accent-2: #525252;
     --accent-3: #313131;
@@ -87,4 +89,8 @@ input[type="range"]:not(.no-base-style)::-webkit-slider-thumb {
     border-radius: 100vh;
     height: 15px;
     width: 15px;
+}
+
+input:focus {
+    outline: 2px solid var(--selected);
 }

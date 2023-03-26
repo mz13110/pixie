@@ -7,11 +7,12 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>cheese</title>
+        <title>Pixie</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="/styles/base.css">
         <link rel="stylesheet" href="/styles/index.css">
+        <link rel="stylesheet" href="/styles/menubar.css">
 
         <!-- Normalize CSS -->
         <link rel="stylesheet" href="/lib/normalize.css">
@@ -30,49 +31,54 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <div class="lmenu sidebar">
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-header-icon bx bxs-color"></span>
-                    <span class="section-header-title">Color Picker</span>
-                    <div class="section-header-line"></div>
-                    <div class="section-header-buttons"></div>
-                </div>
-                <px-color-picker></px-color-picker>
-            </div>
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-header-icon bx bxs-palette"></span>
-                    <span class="section-header-title">Palette Manager</span>
-                    <div class="section-header-line"></div>
-                    <div class="section-header-buttons"></div>
-                </div>
-                <px-palette-manager></px-palette-manager>
-            </div>
+        <div class="menubar">
         </div>
 
-        <div class="main">
-            <px-canvas></px-canvas>
-        </div>
-
-        <div class="rmenu sidebar">
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-header-icon bx bxs-briefcase"></span>
-                    <span class="section-header-title">Toolbox</span>
-                    <div class="section-header-line"></div>
-                    <div class="section-header-buttons"></div>
+        <div class="main-container">
+            <div class="lmenu sidebar">
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-header-icon bx bxs-color"></span>
+                        <span class="section-header-title">Color Picker</span>
+                        <div class="section-header-line"></div>
+                        <div class="section-header-buttons"></div>
+                    </div>
+                    <px-color-picker></px-color-picker>
                 </div>
-                <px-toolbox></px-toolbox>
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-header-icon bx bxs-palette"></span>
+                        <span class="section-header-title">Palette Manager</span>
+                        <div class="section-header-line"></div>
+                        <div class="section-header-buttons"></div>
+                    </div>
+                    <px-palette-manager></px-palette-manager>
+                </div>
             </div>
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-header-icon bx bxs-wrench"></span>
-                    <span class="section-header-title">Tool Info</span>
-                    <div class="section-header-line"></div>
-                    <div class="section-header-buttons"></div>
+
+            <div class="main">
+                <px-canvas></px-canvas>
+            </div>
+
+            <div class="rmenu sidebar">
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-header-icon bx bxs-briefcase"></span>
+                        <span class="section-header-title">Toolbox</span>
+                        <div class="section-header-line"></div>
+                        <div class="section-header-buttons"></div>
+                    </div>
+                    <px-toolbox></px-toolbox>
                 </div>
-                <px-tool-info></px-tool-info>
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-header-icon bx bxs-wrench"></span>
+                        <span class="section-header-title">Tool Info</span>
+                        <div class="section-header-line"></div>
+                        <div class="section-header-buttons"></div>
+                    </div>
+                    <px-tool-info></px-tool-info>
+                </div>
             </div>
         </div>
 
@@ -81,6 +87,10 @@
         <script src="https://unpkg.com/sortablejs@1/Sortable.min.js"></script>
 
         <script src="/scripts/util.js"></script>
+        <script src="/scripts/png.js"></script>
+        <script src="/scripts/menubar.js"></script>
+        <script src="/scripts/file.js"></script>
+        <script src="/scripts/edit.js"></script>
         <script src="/scripts/css.js"></script>
         <script src="/scripts/slider.js"></script>
         <script src="/scripts/state.js"></script>

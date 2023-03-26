@@ -13,7 +13,7 @@
     height: 35px;
 }
 .tool[data-selected="true"] {
-    background-color: var(--bg-2);
+    background-color: var(--bg-2) !important;
 }
 .tool>box-icon {
     width: 100%;

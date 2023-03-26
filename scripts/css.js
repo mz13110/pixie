@@ -8,7 +8,7 @@ window.getCSS = async (path) => {
         styleCache[path] = css
     }
 
-    let e = document.createElement("style")
-    e.innerHTML = css
-    return e
+    let $ = document.createElement("style")
+    $.innerHTML = css
+    return $
 }

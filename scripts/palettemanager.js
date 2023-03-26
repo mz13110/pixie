@@ -46,7 +46,7 @@ class PaletteManagerElement extends HTMLElement {
         super()
 
         this.attachShadow({mode: "open"})
-        this.sr.innerHTML = `
+        this.$sr.innerHTML = `
         <div class="container">
             <div class="colors">
                 <div class="add" data-id="-1">
@@ -54,11 +54,11 @@ class PaletteManagerElement extends HTMLElement {
                 </div>
             </div>
         </div>`
-        getCSS("base").then((css)=>this.sr.appendChild(css))
-        getCSS("palettemanager").then((css)=>this.sr.appendChild(css))
+        getCSS("base").then((css)=>this.$sr.appendChild(css))
+        getCSS("palettemanager").then((css)=>this.$sr.appendChild(css))
 
-        this.$add = this.sr.querySelector(".add")
-        this.$colors = this.sr.querySelector(".colors")
+        this.$add = this.$sr.querySelector(".add")
+        this.$colors = this.$sr.querySelector(".colors")
 
         this.sortable = new Sortable(this.$colors, {
             animation: 100,
@@ -117,36 +117,36 @@ class PaletteManagerElement extends HTMLElement {
 
         let i = 0
         for(let c of this.colors) {
-            let e = document.createElement("div")
-            e.classList.add("color")
-            e.dataset.id = i++
-            e.dataset.hue = c.hue
-            e.dataset.sat = c.sat
-            e.dataset.val = c.val
+            let $ = document.createElement("div")
+            $.classList.add("color")
+            $.dataset.id = i++
+            $.dataset.hue = c.hue
+            $.dataset.sat = c.sat
+            $.dataset.val = c.val
 
-            e.innerHTML = `
+            $.innerHTML = `
             <div class="delete-button"><box-icon name="trash" type="solid"></box-icon></div>
             <div class="move-button"><box-icon name="move"></box-icon></div>
             <div class="edit-button"><box-icon name="edit-alt" type="solid"></box-icon></div>`
 
             c = Object.assign(hsv2rgb(c.hue, c.sat, c.val), c) // make both RGB and HSV available
-            e.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
+            $.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
 
             c = contrastColor(c.hue, c.sat, c.val) === "black" ? "#000000" : "#ffffff"
-            e.querySelectorAll("box-icon").forEach((e) => e.setAttribute("color", c))
-            e.style.setProperty("--contrast", c)
+            $.querySelectorAll("box-icon").forEach((e) => e.setAttribute("color", c))
+            $.style.setProperty("--contrast", c)
 
-            e.onmousedown = () => {
+            $.onmousedown = () => {
                 if(this.mode === "deleting") {
-                    this.removeColorByID(e.dataset.id)
+                    this.removeColorByID($.dataset.id)
                     this.selectionID = -1
                     if(this.colors.length === 0) this.mode = "normal"
                 }
                 else if(this.mode === "rearranging") {}
-                else this.selectionID = e.dataset.id
+                else this.selectionID = $.dataset.id
             }
 
-            this.$colors.insertBefore(e, this.$add)
+            this.$colors.insertBefore($, this.$add)
         }
     }
     onSelectionChanged() {
@@ -210,7 +210,7 @@ class PaletteManagerElement extends HTMLElement {
         return this.colors[id]
     }
 
-    get sr() {
+    get $sr() {
         return this.shadowRoot
     }
 }

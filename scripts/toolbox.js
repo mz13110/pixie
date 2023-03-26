@@ -8,32 +8,31 @@ class ToolboxElement extends HTMLElement {
         super()
 
         this.attachShadow({mode: "open"})
-        this.sr.innerHTML = `
+        this.$sr.innerHTML = `
         <div class="container">
             <div class="tools"></div>
         </div>`
-        getCSS("base").then((css)=>this.sr.appendChild(css))
-        getCSS("toolbox").then((css)=>this.sr.appendChild(css))
+        getCSS("base").then((css)=>this.$sr.appendChild(css))
+        getCSS("toolbox").then((css)=>this.$sr.appendChild(css))
 
         GlobalState.sub("toolbox.selection", (v) => {this.#selection = v; this.onSelectionChanged()})
 
-        this.$tools = this.sr.querySelector(".tools")
+        this.$tools = this.$sr.querySelector(".tools")
 
         ToolRegistry.sub(this.onToolAdded)
         ToolRegistry.tools.map((t)=>this.onToolAdded(t))
     }
 
     onToolAdded(tool) {
-        let e = document.createElement("div")
-        e.classList.add("button", "tool")
-        e.dataset.id = tool.id
-        e.innerHTML = `
-        <box-icon type="${iconClass2Type(tool.icon)}" name="${iconClass2Name(tool.icon)}" color="#ffffff"></box-icon>`
-        e.onclick = () => {
-            this.selection = e.dataset.id
+        let $ = document.createElement("div")
+        $.classList.add("button", "tool")
+        $.dataset.id = tool.id
+        $.appendChild(iconClass2Icon(tool.icon, "#ffffff"))
+        $.onclick = () => {
+            this.selection = $.dataset.id
         }
 
-        this.$tools.appendChild(e)
+        this.$tools.appendChild($)
 
         this.onSelectionChanged()
     }
@@ -43,7 +42,7 @@ class ToolboxElement extends HTMLElement {
         this.$tools.querySelectorAll(`*[data-id="${this.selection}"]`).forEach((e) => e.dataset.selected = true)
     }
 
-    get sr() {
+    get $sr() {
         return this.shadowRoot
     }
 }

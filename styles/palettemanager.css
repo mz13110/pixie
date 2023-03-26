@@ -23,7 +23,7 @@
 }
 .color[data-selected="true"], .add[data-selected="true"] {
     outline: 4px solid var(--text-1);
-    z-index: 9999; /* make the outline above other colors */
+    z-index: 999; /* make the outline above other colors */
 }
 .colors[data-mode="deleting"] .add,
 .colors[data-mode="rearranging"] .add,

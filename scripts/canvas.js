@@ -17,22 +17,22 @@ class CanvasElement extends HTMLElement {
 
         this.attachShadow({mode: "open"})
 
-        this.sr.innerHTML = `
+        this.$sr.innerHTML = `
         <div class="container">
             <div class="canvas-container">
                 <canvas class="display-canvas"></canvas>
                 <canvas class="preview-canvas"></canvas>
             </div>
         </div>`
-        getCSS("base").then((css)=>this.sr.appendChild(css))
-        getCSS("canvas").then((css)=>this.sr.appendChild(css))
+        getCSS("base").then((css)=>this.$sr.appendChild(css))
+        getCSS("canvas").then((css)=>this.$sr.appendChild(css))
 
         GlobalState.sub("canvas.size", (v) => {this.#width = v.w; this.#height = v.h; this.onResized()})
         GlobalState.sub("palettemanager.selection.color", (v) => {this.#selectedColor = hsv2hex(v.hue, v.sat, v.val)})
 
-        this.$canvasContainer = this.sr.querySelector(".canvas-container")
-        this.$canvas = this.sr.querySelector(".display-canvas")
-        this.$preview = this.sr.querySelector(".preview-canvas")
+        this.$canvasContainer = this.$sr.querySelector(".canvas-container")
+        this.$canvas = this.$sr.querySelector(".display-canvas")
+        this.$preview = this.$sr.querySelector(".preview-canvas")
         this.ctx = this.$canvas.getContext("2d")
         this.previewCtx = this.$preview.getContext("2d")
 
@@ -98,7 +98,7 @@ class CanvasElement extends HTMLElement {
         this.$preview.height = this.height
     }
 
-    get sr() {
+    get $sr() {
         return this.shadowRoot
     }
 }

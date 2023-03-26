@@ -25,7 +25,7 @@ class SliderElement extends HTMLElement {
         this.attachShadow({
             mode: "open"
         })
-        this.sr.innerHTML = `
+        this.$sr.innerHTML = `
         <div class="container">
             <input class="slider no-base-style" type="range">
             <div class="slider-bg">
@@ -38,13 +38,13 @@ class SliderElement extends HTMLElement {
             </div>
         </div>
         `
-        getCSS("base").then((css)=>this.sr.appendChild(css))
-        getCSS("slider").then((css)=>this.sr.appendChild(css))
+        getCSS("base").then((css)=>this.$sr.appendChild(css))
+        getCSS("slider").then((css)=>this.$sr.appendChild(css))
 
-        this.$container = this.sr.querySelector(".container")
-        this.$slider = this.sr.querySelector(".slider")
-        this.$label = this.sr.querySelector(".label")
-        this.$number = this.sr.querySelector(".number")
+        this.$container = this.$sr.querySelector(".container")
+        this.$slider = this.$sr.querySelector(".slider")
+        this.$label = this.$sr.querySelector(".label")
+        this.$number = this.$sr.querySelector(".number")
 
         this.$slider.oninput = (e) => {
             e.stopPropagation() // the event might bubble out shadow root
@@ -124,16 +124,16 @@ class SliderElement extends HTMLElement {
                 if(v !== parseFloat(old)) this.dispatchEvent(new Event("input"))
 
                 // resize the number input because they wont do it for me
-                let e = document.createElement("div") // measure the needed size
-                e.innerText = v
-                e.style.visibility = "hidden"
-                e.style.pointerEvents = "none"
-                e.style.position = "absolute"
-                e.style.overflow = "hidden"
-                e.classList.add("number")
-                this.$container.appendChild(e)
-                this.$number.style.width = (e.getBoundingClientRect().width)+"px" // apply the size
-                e.remove() // clean up
+                let $ = document.createElement("div") // measure the needed size
+                $.innerText = v
+                $.style.visibility = "hidden"
+                $.style.pointerEvents = "none"
+                $.style.position = "absolute"
+                $.style.overflow = "hidden"
+                $.classList.add("number")
+                this.$container.appendChild($)
+                this.$number.style.width = ($.getBoundingClientRect().width)+"px" // apply the size
+                $.remove() // clean up
 
                 this.$slider.value = v
                 this.$number.value = v
@@ -151,7 +151,7 @@ class SliderElement extends HTMLElement {
         return ["min", "max", "step", "value", "name"]
     }
 
-    get sr() {
+    get $sr() {
         return this.shadowRoot
     }
 }

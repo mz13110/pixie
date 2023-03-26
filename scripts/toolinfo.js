@@ -17,12 +17,12 @@ class ToolInfoElement extends HTMLElement {
         this.attachShadow({
             mode: "open"
         })
-        this.sr.innerHTML = `
+        this.$sr.innerHTML = `
         <div class="container"></div>`
-        getCSS("base").then((css)=>this.sr.appendChild(css))
-        getCSS("toolinfo").then((css)=>this.sr.appendChild(css))
+        getCSS("base").then((css)=>this.$sr.appendChild(css))
+        getCSS("toolinfo").then((css)=>this.$sr.appendChild(css))
 
-        this.$container = this.sr.querySelector(".container")
+        this.$container = this.$sr.querySelector(".container")
     }
 
     onToolChanged() {
@@ -35,21 +35,21 @@ class ToolInfoElement extends HTMLElement {
         for(let [k, i] of Object.entries(this.tool.schema)) {
             switch(i.type) {
                 case "slider":
-                    let e = document.createElement("px-slider")
-                    e.classList.add("slider")
-                    e.name = i.name
-                    e.min = i.min ?? 0
-                    e.max = i.max ?? 100
-                    e.step = i.step ?? 1
-                    e.value = this.tool.getProp(k) ?? i.default
+                    let $ = document.createElement("px-slider")
+                    $.classList.add("slider")
+                    $.name = i.name
+                    $.min = i.min ?? 0
+                    $.max = i.max ?? 100
+                    $.step = i.step ?? 1
+                    $.value = this.tool.getProp(k) ?? i.default
 
-                    e.oninput = () => this.tool.setProp(k, e.value)
-                    this.$container.appendChild(e)
+                    $.oninput = () => this.tool.setProp(k, $.value)
+                    this.$container.appendChild($)
             }
         }
     }
 
-    get sr() {
+    get $sr() {
         return this.shadowRoot
     }
 }

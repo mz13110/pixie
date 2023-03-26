@@ -20,7 +20,7 @@ class ColorPickerElement extends HTMLElement {
         this.attachShadow({
             mode: "open"
         })
-        this.sr.innerHTML = `
+        this.$sr.innerHTML = `
         <div class="container" ondragstart="return false">
             <div class="wheel-container">
                 <div class="wheel"></div>
@@ -66,27 +66,27 @@ class ColorPickerElement extends HTMLElement {
                 </div>
             </div>
         </div>`
-        getCSS("base").then((css)=>this.sr.appendChild(css))
-        getCSS("colorpicker").then((css)=>this.sr.appendChild(css))
+        getCSS("base").then((css)=>this.$sr.appendChild(css))
+        getCSS("colorpicker").then((css)=>this.$sr.appendChild(css))
 
-        this.$container = this.sr.querySelector(".container")
-        this.$wheelPointer = this.sr.querySelector(".wheel-pointer")
-        this.$wheelContainer = this.sr.querySelector(".wheel-container")
+        this.$container = this.$sr.querySelector(".container")
+        this.$wheelPointer = this.$sr.querySelector(".wheel-pointer")
+        this.$wheelContainer = this.$sr.querySelector(".wheel-container")
 
-        this.$wheelInnerContainer = this.sr.querySelector(".wheel-inner-container")
-        this.$wheelInner = this.sr.querySelector(".wheel-inner")
-        this.$wheelSatV = this.sr.querySelector(".wheel-satv")
-        this.$wheelSatVCanvas = this.sr.querySelector(".wheel-satv-canvas")
-        this.$wheelSatVHandle = this.sr.querySelector(".wheel-satv-handle")
+        this.$wheelInnerContainer = this.$sr.querySelector(".wheel-inner-container")
+        this.$wheelInner = this.$sr.querySelector(".wheel-inner")
+        this.$wheelSatV = this.$sr.querySelector(".wheel-satv")
+        this.$wheelSatVCanvas = this.$sr.querySelector(".wheel-satv-canvas")
+        this.$wheelSatVHandle = this.$sr.querySelector(".wheel-satv-handle")
 
-        this.$hexContainer = this.sr.querySelector(".hex-container")
-        this.$hex = this.sr.querySelector(".hex")
-        this.$sliderHue = this.sr.querySelector(".slider-hue")
-        this.$inputHue = this.sr.querySelector(".input-hue")
-        this.$sliderSat = this.sr.querySelector(".slider-sat")
-        this.$inputSat = this.sr.querySelector(".input-sat")
-        this.$sliderVal = this.sr.querySelector(".slider-val")
-        this.$inputVal = this.sr.querySelector(".input-val")
+        this.$hexContainer = this.$sr.querySelector(".hex-container")
+        this.$hex = this.$sr.querySelector(".hex")
+        this.$sliderHue = this.$sr.querySelector(".slider-hue")
+        this.$inputHue = this.$sr.querySelector(".input-hue")
+        this.$sliderSat = this.$sr.querySelector(".slider-sat")
+        this.$inputSat = this.$sr.querySelector(".input-sat")
+        this.$sliderVal = this.$sr.querySelector(".slider-val")
+        this.$inputVal = this.$sr.querySelector(".input-val")
 
         this.outerDiameter = this.$wheelContainer.getBoundingClientRect().width
         this.innerDiameter = this.$wheelInnerContainer.getBoundingClientRect().width
@@ -307,7 +307,7 @@ class ColorPickerElement extends HTMLElement {
         this.redraw()
     }
 
-    get sr() {
+    get $sr() {
         return this.shadowRoot
     }
 }
