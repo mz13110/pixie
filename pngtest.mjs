@@ -13,23 +13,233 @@ const crc32 = (data) => {
     else throw `cannot crc ${data}`
 }
 const uint32ToUint8ArrayBE = (n) => [(n & 0xff000000) >>> 24, (n & 0xff0000) >>> 16, (n & 0xff00) >>> 8, (n & 0xff)]
-const int32ToInt8ArrayBE = uint32ToUint8ArrayBE
-const int32ToUint8ArrayBE = uint32ToUint8ArrayBE
 
 class PNG {
     static get SIGNATURE() {return [137, 80, 78, 71, 13, 10, 26, 10]}
     static get IEND() {return [0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130]}
 
-    static get IHDR_LEGAL_COLOR_TYPES() {return [0, 2, 3, 4, 6]}
-    static get IHDR_LEGAL_BIT_DEPTHS() {return [1, 2, 4, 8, 16]}
-    static get IHDR_LEGAL_BIT_DEPTH_COMBOS() {return [[1,2,4,8,16],[],[8,16],[1,2,4,8],[8,16],[],[8,16]]}
+    static get LEGAL_COLOR_TYPES() {return [0, 2, 3, 4, 6]}
+    static get LEGAL_BIT_DEPTHS() {return [1, 2, 4, 8, 16]}
+    static get LEGAL_BIT_DEPTH_COMBOS() {return [[1,2,4,8,16],[],[8,16],[1,2,4,8],[8,16],[],[8,16]]}
     static get IHDR_COMPRESSION_METHODS() {return ["deflate32k"]}
     static get IHDR_FILTERING_METHODS() {return ["adaptive"]}
     static get IHDR_INTERLACING_METHODS() {return ["none", "adam7"]}
 
-    static readChunks(data) {
-        const signature = PNG.SIGNATURE.slice()
+    static get COMPRESSION_METHODS() {return {
+        "deflate32k": {
+            inflate: (data) => {
+                writeFileSync("a", data)
+                return pako.inflate(data, {windowBits: 2^15})
+            },
+            deflate: (data) => pako.deflate(data, {windowBits: 2^15})
+        }
+    }}
+    static get FILTERING_METHODS() {return {"adaptive": [
+        () => {} // sub
+    ]}}
+    static get INTERLACING_METHODS() {return {
+        "none": function*(w, h) {
+            for(let y = 0; y < h; y++) {
+                for(let x = 0; x < w; x++) yield [x, y]
+            }
+        },
+        "adam7": function*(w, h) {
+            for(let y = 0; y < h; y++) {
+                for(let x = 0; x < w; x++) yield [x, y]
+            }
+        }
+    }}
 
+    constructor(chunks) {
+        let info = {
+            pixels: null,
+            bytesPerPixel: null,
+            calculatedPixelBytes: null,
+
+            compressedPixels: new Uint8Array(0),
+            compressedPixelBytesGathered: 0,
+            color: {
+                bitDepth: null,
+                usePalette: null,
+                useColor: null,
+                useAlpha: null
+            },
+            palette: null,
+            compression: null,
+            filtering: null,
+            interlacing: null,
+            pixie: {}
+        }
+
+        let ci = 0
+
+        let encounters = {
+            IHDR: null,
+            PLTE: null,
+            IDAT: null,
+            IEND: null
+        }
+        for(let chunk of chunks) {
+            if(ci === 0 && chunk.type !== "IHDR") throw "first chunk must be IHDR"
+
+            switch(chunk.type) {
+                case "tEXt": {
+                    let keyword = "", text = ""
+                    let parsingKeyword = true
+                    for(let byte of chunk.data) {
+                        if(parsingKeyword) {
+                            if(byte === 0x00) {
+                                if(keyword === "") throw "tEXt keyword cannot be empty"
+                                parsingKeyword = false
+                                continue
+                            }
+                            keyword += String.fromCharCode(byte)
+                            if(keyword.length >= 80) throw "tEXt keyword must be less than 80 characters"
+                        }
+                        else {
+                            if(byte === 0x00) throw "tEXt text cannot have null character"
+                            text += String.fromCharCode(byte)
+                        }
+                    }
+
+                    if(keyword.startsWith("Pixie")) {
+                        console.log(keyword, text)
+                    }
+
+                    break
+                }
+                case "IHDR": {
+                    if(encounters.IHDR !== null) throw "only one IHDR is allowed"
+
+                    let field = 0 // 0: width (Int32BE), 1: height (Int32BE), 2: compression (Uint8), 3: filter (Uint8), 4: interlace (Uint8), 7: end of stream expected
+                    let i = 0
+                    let wh = 0
+
+                    for(let byte of chunk.data) {
+                        switch(field) {
+                            // because width and height are stored the same way, we can simplify by using fall-through
+                            case 0:   // width
+                            case 1: { // height
+                                wh = (wh << 8) + byte // use unsigned bitshift because according to the spec, width and height are unsigned
+
+                                if(++i === 4) {
+                                    if(wh > 0x7fffffff) throw "width and height cannot be greater than (2^31)-1"
+                                    if(wh < 1) throw "width and height must be at least 1"
+
+                                    if(field === 0) info.width = wh
+                                    else info.height = wh
+
+                                    wh = 0, i = 0, field++
+                                }
+                                break
+                            }
+
+                            case 2: { // bit depth
+                                if(!PNG.LEGAL_BIT_DEPTHS.includes(byte)) throw `${byte} is not a valid bit depth. valid bit depths are 1, 2, 4, 8, and 16`
+
+                                info.color.bitDepth = byte
+
+                                field = 3
+                                break
+                            }
+                            case 3: { // color type
+                                if(!PNG.LEGAL_COLOR_TYPES.includes(byte)) throw `${byte} is not a valid color type. valid color types are 0, 2, 3, 4, 6`
+                                if(!PNG.LEGAL_BIT_DEPTH_COMBOS[byte].includes(info.color.bitDepth)) throw `${info.color.bitDepth} is not a valid bit depth for color type ${byte}`
+
+                                info.color.usePalette = (byte & 1) === 1
+                                info.color.useColor   = (byte & 2) === 2
+                                info.color.useAlpha   = (byte & 4) === 4
+
+                                field = 4
+                                break
+                            }
+                            case 4: // compression method
+                                if(!(byte in PNG.IHDR_COMPRESSION_METHODS)) throw `unrecognized compression method ${byte}` // only one compression method (deflate/inflate with 32k sliding window) is defined by the spec
+
+                                info.compression = PNG.IHDR_COMPRESSION_METHODS[byte]
+
+                                field = 5
+                                break
+                            case 5: // filtering method
+                                if(!(byte in PNG.IHDR_FILTERING_METHODS)) throw `unrecognized filter method ${byte}` // only one filter method (adaptive filtering with five basic filter types) is defined by the spec
+
+                                info.filtering = PNG.IHDR_FILTERING_METHODS[byte]
+
+                                field = 6
+                                break
+                            case 6: // interlacing method (if any at all)
+                                if(!(byte in PNG.IHDR_INTERLACING_METHODS)) throw `unrecognized interlacing method ${byte}`
+
+                                info.interlacing = PNG.IHDR_INTERLACING_METHODS[byte]
+
+                                field = 7
+                                break
+
+                            case 7:
+                                throw `bad or missing IHDR`
+                        }
+                    }
+                    if(field !== 7 || i !== 0) throw "bad or missing IHDR"
+
+                    encounters.IHDR = ci
+
+                    console.log(info.color)
+                    info.bytesPerPixel = (((info.color.usePalette ? 1 : ((info.color.useColor?3:1) + (info.color.useAlpha?1:0))) * info.color.bitDepth) / 8)
+                    info.calculatedPixelBytes = info.bytesPerPixel*info.width*info.height + info.height // make sure to account for extra "filter type byte" before each scanline
+
+                    break
+                }
+                case "IDAT": {
+                    if(encounters.IDAT !== null && encounters.IDAT !== ci - 1) throw "IDAT(s) must be consecutive"
+                    if(info.color.usePalette && encounters.PLTE === null) throw "missing PLTE (usePalette was specified in IHDR)"
+
+                    info.compressedPixels = new Uint8Array(info.compressedPixelBytesGathered + chunk.data.length)
+                    info.compressedPixels.set(info.compressedPixels, 0)
+                    info.compressedPixels.set(chunk.data, info.compressedPixelBytesGathered)
+                    info.compressedPixelBytesGathered += chunk.data.length
+                }
+            }
+
+            ci++
+        }
+        // +===============+
+        // | DECOMPRESSION |
+        // +===============+
+        // decompress the image data with the selected scheme
+            info.pixels = PNG.COMPRESSION_METHODS[info.compression].inflate(info.compressedPixels)
+            if(info.pixels.length !== info.calculatedPixelBytes) throw `expected ${info.calculatedPixelBytes} bytes of pixel data (after compression), got ${info.pixels.length} instead`
+
+            // free some memory
+            info.compressedPixels = null
+            info.compressedPixelBytesGathered = null
+
+
+        // +===========+
+        // | FILTERING |
+        // +===========+
+        // unravel each scanline, applying correct filters
+            for(let y = 0; y < info.height; y++) {
+                for(let x = 0; x < info.width; x++) {
+                    console.log(x, y)
+                }
+            }
+
+
+        // +=============+
+        // | INTERLACING |
+        // +=============+
+        // remap 
+            for(let [x, y] of PNG.INTERLACING_METHODS[info.interlacing](info.width, info.height)) {
+                console.log(x, y)
+            }
+    }
+
+    static fromBuffer(data) {
+        if(typeof data[Symbol.iterator] === "function" || data instanceof ArrayBuffer) data = new Uint8Array(data)
+        else if(data instanceof Blob) throw "use readChunksAsync for blobs"
+        else throw `unable to process ${data} as png`
+
+        let signature = PNG.SIGNATURE.slice()
         let chunks = []
 
         let step = 0 // 0: signature, 1: chunk length, 2: chunk type, 3: chunk data, 4: chunk crc
@@ -38,186 +248,73 @@ class PNG {
         let chunkType = ""
         let chunkData = new Uint8Array(new ArrayBuffer(0))
         let chunkCrc = 0
-        let iendEncountered = false
-        let idatEncountered = false
 
-        function process(bytes) {
-            for(let byte of bytes) {
-                switch(step) {
-                    case 0: {// signature
-                        let b = signature.shift()
-                        if(b !== byte) throw "bad or missing signature"
-                        if(signature.length === 0) step = 1
-                        break
+        let done = false
+
+        for(let byte of data) {
+            if(done) break
+            switch(step) {
+                case 0: {// signature
+                    let b = signature.shift()
+                    if(b !== byte) throw "bad or missing signature"
+                    if(signature.length === 0) step = 1
+                    break
+                }
+                case 1: {// chunk length
+                    if(i === 0) {
+                        chunkLength = 0
+                        chunkType = ""
+                        chunkData = new Uint8Array(0)
+                        chunkCrc = 0
                     }
-                    case 1: {// chunk length
-                        if(i === 0) {
-                            chunkLength = 0
-                            chunkType = ""
-                            chunkData = new Uint8Array(0)
-                            chunkCrc = 0
+                    chunkLength = (chunkLength * 0x100) + byte // unsigned left shift doesnt exist for some reason
+                    if(++i === 4) i = 0, step = 2
+                    break
+                }
+                case 2: {// chunk type
+                    chunkType = chunkType + String.fromCharCode(byte)
+                    if(++i == 4) i = 0, step = chunkLength === 0 ? 4 : 3
+                    break
+                }
+                case 3: {// chunk data
+                    if(i === 0) chunkData = new Uint8Array(chunkLength)
+                    chunkData[i] = byte
+                    if(++i == chunkLength) i = 0, step = 4
+                    break
+                }
+                case 4: {// chunk crc
+                    chunkCrc = (chunkCrc * 0x100) + byte // unsigned left shift doesnt exist for some reason
+                    if(++i === 4) {
+                        i = 0
+                        let d = new Uint8Array(chunkLength + 4)
+                        d[0] = chunkType[0].charCodeAt()
+                        d[1] = chunkType[1].charCodeAt()
+                        d[2] = chunkType[2].charCodeAt()
+                        d[3] = chunkType[3].charCodeAt()
+                        d.set(chunkData, 4)
+                        if(crc32(d) !== chunkCrc) throw "bad or missing checksum"
+
+                        if(chunkType === "IEND") {
+                            done = true
+                            break
                         }
-                        chunkLength = (chunkLength * 0x100) + byte // unsigned left shift doesnt exist for some reason
-                        if(++i === 4) i = 0, step = 2
-                        break
+
+                        chunks.push({type: chunkType, data: chunkData})
+                        step = 1
                     }
-                    case 2: {// chunk type
-                        chunkType = chunkType + String.fromCharCode(byte)
-                        if(++i == 4) {
-                            if(chunks.length === 0 && chunkType !== "IHDR") throw "first chunk not IHDR" // first png chunk should always be IHDR
-                            if(chunkType === "IDAT") idatEncountered = true
-                            i = 0, step = chunkLength === 0 ? 4 : 3
-                        }
-                        break
-                    }
-                    case 3: {// chunk data
-                        if(i === 0) chunkData = new Uint8Array(chunkLength)
-                        chunkData[i] = byte
-                        if(++i == chunkLength) i = 0, step = 4
-                        break
-                    }
-                    case 4: {// chunk crc
-                        chunkCrc = (chunkCrc * 0x100) + byte // unsigned left shift doesnt exist for some reason
-                        if(++i === 4) {
-                            i = 0
-                            let d = new Uint8Array(chunkLength + 4)
-                            d[0] = chunkType[0].charCodeAt()
-                            d[1] = chunkType[1].charCodeAt()
-                            d[2] = chunkType[2].charCodeAt()
-                            d[3] = chunkType[3].charCodeAt()
-                            d.set(chunkData, 4)
-                            if(crc32(d) !== chunkCrc) throw "bad or missing checksum"
-
-                            if(chunkType === "IEND") {
-                                iendEncountered = true
-                                return
-                            }
-
-                            let chunk = {type: chunkType, raw: chunkData}
-                            switch(chunkType) {
-                                case "tEXt": {
-                                    let keyword = "", text = ""
-                                    let parsingKeyword = true
-                                    for(let byte of chunkData) {
-                                        if(parsingKeyword) {
-                                            if(byte === 0x00) {
-                                                if(keyword === "") throw "tEXt keyword cannot be empty"
-                                                parsingKeyword = false
-                                                continue
-                                            }
-                                            keyword += String.fromCharCode(byte)
-                                            if(keyword.length >= 80) throw "tEXt keyword must be less than 80 characters"
-                                        }
-                                        else {
-                                            if(byte === 0x00) throw "tEXt text cannot have null character"
-                                            text += String.fromCharCode(byte)
-                                        }
-                                    }
-                                    chunk.data = {keyword, text}
-                                    break
-                                }
-                                case "IHDR": {
-                                    let field = 0 // 0: width (Int32BE), 1: height (Int32BE), 2: compression (Uint8), 3: filter (Uint8), 4: interlace (Uint8), 7: end of stream expected
-                                    let i = 0
-                                    let wh = 0
-
-                                    chunk.data = {}
-                                    for(let byte of chunkData) {
-                                        switch(field) {
-                                            // because width and height are stored the same way, we can simplify by using switch(){} fall-through
-                                            case 0:   // width
-                                            case 1: { // height
-                                                wh = (wh << 8) + byte // use unsigned bitshift because according to the spec, width and height are unsigned
-
-                                                if(++i === 4) {
-                                                    if(wh > 0x7fffffff) throw "width and height cannot be greater than (2^31)-1"
-                                                    if(wh < 1) throw "width and height must be at least 1"
-
-                                                    if(field === 0) chunk.data.width = wh
-                                                    else chunk.data.height = wh
-
-                                                    wh = 0, i = 0, field++
-                                                }
-                                                break
-                                            }
-
-                                            case 2: { // bit depth
-                                                if(!PNG.IHDR_LEGAL_BIT_DEPTHS.includes(byte)) throw `${byte} is not a valid bit depth. valid bit depths are 1, 2, 4, 8, and 16`
-
-                                                chunk.data.bitDepth = byte
-
-                                                field = 3
-                                                break
-                                            }
-                                            case 3: { // color type
-                                                if(!PNG.IHDR_LEGAL_COLOR_TYPES.includes(byte)) throw `${byte} is not a valid color type. valid color types are 0, 2, 3, 4, 6`
-                                                if(!PNG.IHDR_LEGAL_BIT_DEPTH_COMBOS[byte].includes(chunk.data.bitDepth)) throw `${chunk.data.bitDepth} is not a valid bit depth for color type ${byte}`
-
-                                                chunk.data.color = {
-                                                    usePalette: byte & 1,
-                                                    useColor: byte & 2,
-                                                    useAlpha: byte & 4
-                                                }
-
-                                                field = 4
-                                                break
-                                            }
-                                            case 4: // compression method
-                                                if(!(byte in PNG.IHDR_COMPRESSION_METHODS)) throw `unrecognized compression method ${byte}` // only one compression method (deflate/inflate with 32k sliding window) is defined by the spec
-
-                                                chunk.data.compression = PNG.IHDR_COMPRESSION_METHODS[byte]
-
-                                                field = 5
-                                                break
-                                            case 5: // filtering method
-                                                if(!(byte in PNG.IHDR_FILTERING_METHODS)) throw `unrecognized filter method ${byte}` // only one filter method (adaptive filtering with five basic filter types) is defined by the spec
-
-                                                chunk.data.filter = PNG.IHDR_FILTERING_METHODS[byte]
-
-                                                field = 6
-                                                break
-                                            case 6: // interlacing method (if any at all)
-                                                if(!(byte in PNG.IHDR_INTERLACING_METHODS)) throw `unrecognized interlacing method ${byte}`
-
-                                                chunk.data.interlacing = PNG.IHDR_INTERLACING_METHODS[byte]
-
-                                                field = 7
-                                                break
-
-                                            case 7:
-                                                throw `bad or missing IHDR`
-                                        }
-                                    }
-                                    if(field !== 7 || i !== 0) throw "bad or missing IHDR"
-                                }
-                            }
-
-                            chunks.push(chunk)
-                            step = 1
-                        }
-                        break
-                    }
+                    break
                 }
             }
         }
-        function finish() {
-            if(!iendEncountered) throw "missing IEND"
-            if(!idatEncountered) throw "missing IDAT"
-        }
 
-        if(typeof data[Symbol.iterator] === "function" || data instanceof ArrayBuffer) process(new Uint8Array(data))
-        else if(data instanceof Blob) throw "use readChunksAsync for blobs"
-        else throw `unable to process ${data} as png`
-        finish()
-
-        return chunks
+        return new PNG(chunks)
     }
-    static async readChunksAsync(data) {
-        if(typeof data[Symbol.iterator] === "function" || data instanceof ArrayBuffer) return PNG.readChunks(new Uint8Array(data))
-        else if(data instanceof Blob) return PNG.readChunks(await data.arrayBuffer())
+    static async fromBufferAsync(data) {
+        if(typeof data[Symbol.iterator] === "function" || data instanceof ArrayBuffer) return PNG.fromBuffer(data)
+        else if(data instanceof Blob) return PNG.fromBuffer(await data.arrayBuffer())
         else throw `unable to process ${data} as png`
     }
-    static saveChunks(chunks) {
+    static chunksToBuffer(chunks) {
         let idatEncountered = false
         let iendEncountered = false
         let i = 0
@@ -308,13 +405,16 @@ class PNG {
     }
 }
 
-import {readFileSync} from "fs"
+import {readFileSync, writeFileSync} from "fs"
+import pako from "./pako.mjs"
 
-let f = readFileSync("test.png")
+let f = readFileSync("test16.png")
 let a = new Uint8Array(f.length)
 f.copy(a)
 
-let decoded = PNG.readChunks(a)
+let decoded = PNG.fromBuffer(a)
+console.log(decoded)
+process.exit()
 let b = PNG.saveChunks(decoded)
 
 console.log("input: a")
