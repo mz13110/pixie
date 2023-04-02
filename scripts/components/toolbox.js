@@ -13,7 +13,7 @@ class ToolboxElement extends HTMLElement {
             <div class="tools"></div>
         </div>`
         getCSS("base").then((css)=>this.$sr.appendChild(css))
-        getCSS("toolbox").then((css)=>this.$sr.appendChild(css))
+        getCSS("components/toolbox").then((css)=>this.$sr.appendChild(css))
 
         GlobalState.sub("toolbox.selection", (v) => {this.#selection = v; this.onSelectionChanged()})
 

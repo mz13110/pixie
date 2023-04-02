@@ -55,7 +55,7 @@ class PaletteManagerElement extends HTMLElement {
             </div>
         </div>`
         getCSS("base").then((css)=>this.$sr.appendChild(css))
-        getCSS("palettemanager").then((css)=>this.$sr.appendChild(css))
+        getCSS("components/palettemanager").then((css)=>this.$sr.appendChild(css))
 
         this.$add = this.$sr.querySelector(".add")
         this.$colors = this.$sr.querySelector(".colors")

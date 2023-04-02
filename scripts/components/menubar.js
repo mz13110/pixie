@@ -1,5 +1,40 @@
-let $menubar = document.querySelector(".menubar")
+class MenubarElement extends HTMLElement {
+    canonical = false
+    constructor() {
+        super()
 
+        if($menubarfr === null) {
+            this.canonical = true
+            this.attachShadow({mode: "open"})
+            this.$sr.innerHTML = `<div class="container"></div>`
+            getCSS("base").then((css)=>{
+                this.$sr.appendChild(css)
+                Menubar.reloadStyles()
+                
+            })
+            getCSS("components/menubar").then((css)=>this.$sr.appendChild(css))
+
+            $menubarfr = this
+            $menubar = this.$sr.querySelector(".container")
+        }
+    }
+
+    connectedCallback() {
+        if(!this.canonical)  this.replaceWith($menubarfr)
+
+        Menubar.reloadStyles()
+    }
+
+    get $sr() {
+        return this.shadowRoot
+    }
+}
+customElements.define("px-menubar", MenubarElement)
+
+let $menubarfr = null
+let $menubar = null
+document.createElement("px-menubar") // first menubar created will fill $menubar
+window.$menubar = $menubar
 const SEPARATOR = Symbol("separator")
 
 class Menubar {
@@ -17,7 +52,7 @@ class Menubar {
             let $ = document.createElement("div")
             $.innerText = name
             $.dataset.id = id
-            $.classList.add("menubar-section")
+            $.classList.add("section")
             $.onmouseenter = () => {
                 if(this.browsing) {
                     this.closeAll()
@@ -41,7 +76,7 @@ class Menubar {
             }
 
             let $c = document.createElement("div")
-            $c.classList.add("menubar-section-container")
+            $c.classList.add("section-container")
             $.appendChild($c)
 
             let popper = Popper.createPopper($, $c, {
@@ -61,7 +96,7 @@ class Menubar {
             let {name, icon, id: fullId, disabled, listeners} = item
             if(name === SEPARATOR) {
                 let $ = document.createElement("div")
-                $.classList.add("menubar-separator")
+                $.classList.add("separator")
 
                 $.onclick = (e) => e.stopPropagation()
 
@@ -81,7 +116,7 @@ class Menubar {
             let $ = document.createElement("div")
             $.dataset.id = id
             $.dataset.disabled = disabled === true
-            $.classList.add("menubar-item")
+            $.classList.add("item")
             $.onclick = (e) => {
                 e.stopPropagation()
 
@@ -90,7 +125,7 @@ class Menubar {
                 this.close(section)
                 listeners.map((l) => l())
             }
-            $.appendChild(window.iconClass2Icon(icon, "#ffffff"))
+            $.appendChild(window.iconClass2Icon(icon, window.getComputedStyle($).getPropertyValue("--text-1")))
             $.appendChild(Object.assign(document.createElement("span"), {innerText: name}))
             this.sections[section].$c.appendChild($)
 
@@ -103,7 +138,7 @@ class Menubar {
         let section = this.sections[id]
 
         if(typeof section !== "object") return
-        
+
         section.$.dataset.open = true
         section.popper.setOptions((options) => ({
             ...options,
@@ -136,7 +171,13 @@ class Menubar {
     static disableItem(id) {
         let $ = this.items[id].$
         $.dataset.disabled = true
-        $.querySelector("box-icon").setAttribute("color", getComputedStyle($).getPropertyValue("--text-disabled"))
+        $.querySelector("box-icon").setAttribute("color", window.getComputedStyle($).getPropertyValue("--text-disabled"))
+    }
+
+    static reloadStyles() {
+        for(let {$, disabled} of Object.values(this.items)) {
+            $.querySelector("box-icon").setAttribute("color", window.getComputedStyle($).getPropertyValue(disabled ? "--text-disabled" : "--text-1"))
+        }
     }
 }
 

@@ -67,7 +67,7 @@ class ColorPickerElement extends HTMLElement {
             </div>
         </div>`
         getCSS("base").then((css)=>this.$sr.appendChild(css))
-        getCSS("colorpicker").then((css)=>this.$sr.appendChild(css))
+        getCSS("components/colorpicker").then((css)=>this.$sr.appendChild(css))
 
         this.$container = this.$sr.querySelector(".container")
         this.$wheelPointer = this.$sr.querySelector(".wheel-pointer")

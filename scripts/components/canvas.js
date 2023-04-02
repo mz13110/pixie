@@ -25,7 +25,7 @@ class CanvasElement extends HTMLElement {
             </div>
         </div>`
         getCSS("base").then((css)=>this.$sr.appendChild(css))
-        getCSS("canvas").then((css)=>this.$sr.appendChild(css))
+        getCSS("components/canvas").then((css)=>this.$sr.appendChild(css))
 
         GlobalState.sub("canvas.size", (v) => {this.#width = v.w; this.#height = v.h; this.onResized()})
         GlobalState.sub("palettemanager.selection.color", (v) => {this.#selectedColor = hsv2hex(v.hue, v.sat, v.val)})

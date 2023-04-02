@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html>
     <head>
         <meta charset="utf-8">
@@ -11,11 +7,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="/styles/base.css">
-        <link rel="stylesheet" href="/styles/index.css">
-        <link rel="stylesheet" href="/styles/menubar.css">
-
-        <!-- Normalize CSS -->
-        <link rel="stylesheet" href="/lib/normalize.css">
+        <link rel="stylesheet" href="/styles/modal.css">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,84 +15,89 @@
         <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap" rel="stylesheet">
 
         <!-- Icons -->
-        <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
-        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/boxicons@2/dist/boxicons.js"></script>
     </head>
     <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-
-        <div class="menubar">
-        </div>
-
-        <div class="main-container">
-            <div class="lmenu sidebar">
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-header-icon bx bxs-color"></span>
-                        <span class="section-header-title">Color Picker</span>
-                        <div class="section-header-line"></div>
-                        <div class="section-header-buttons"></div>
-                    </div>
-                    <px-color-picker></px-color-picker>
-                </div>
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-header-icon bx bxs-palette"></span>
-                        <span class="section-header-title">Palette Manager</span>
-                        <div class="section-header-line"></div>
-                        <div class="section-header-buttons"></div>
-                    </div>
-                    <px-palette-manager></px-palette-manager>
-                </div>
-            </div>
-
-            <div class="main">
-                <px-canvas></px-canvas>
-            </div>
-
-            <div class="rmenu sidebar">
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-header-icon bx bxs-briefcase"></span>
-                        <span class="section-header-title">Toolbox</span>
-                        <div class="section-header-line"></div>
-                        <div class="section-header-buttons"></div>
-                    </div>
-                    <px-toolbox></px-toolbox>
-                </div>
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-header-icon bx bxs-wrench"></span>
-                        <span class="section-header-title">Tool Info</span>
-                        <div class="section-header-line"></div>
-                        <div class="section-header-buttons"></div>
-                    </div>
-                    <px-tool-info></px-tool-info>
-                </div>
-            </div>
-        </div>
-
         <!-- Libraries -->
-        <script src="https://unpkg.com/@popperjs/core@2"></script>
-        <script src="https://unpkg.com/sortablejs@1/Sortable.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js"></script>
+        <script src="/third_party/buffer.pngjs.js"></script> <!-- pngjs' browser version didnt work so i browserified it myself :( -->
 
-        <script src="/scripts/util.js"></script>
-        <script src="/scripts/png.js"></script>
-        <script src="/scripts/menubar.js"></script>
+        <script src="/scripts/polyfill/shadow.js"></script>
+        <script src="/scripts/lib/util.js"></script>
+        <script src="/scripts/lib/image.js"></script>
+        <script src="/scripts/lib/css.js"></script>
+        <script src="/scripts/lib/state.js"></script>
+        <script src="/scripts/lib/shadow.js"></script>
+        <script src="/scripts/components/modal.js"></script>
+        <script src="/scripts/components/menubar.js"></script>
+        <script src="/scripts/tool/tool.js"></script>
+        <script src="/scripts/tool/tools.js"></script>
         <script src="/scripts/file.js"></script>
         <script src="/scripts/edit.js"></script>
-        <script src="/scripts/css.js"></script>
-        <script src="/scripts/slider.js"></script>
-        <script src="/scripts/state.js"></script>
-        <script src="/scripts/canvas.js"></script>
-        <script src="/scripts/colorpicker.js"></script>
-        <script src="/scripts/palettemanager.js"></script>
-        <script src="/scripts/tool.js"></script>
-        <script src="/scripts/tools.js"></script>
-        <script src="/scripts/toolbox.js"></script>
-        <script src="/scripts/toolinfo.js"></script>
-        <script src="/scripts/index.js" defer></script>
+        <script src="/scripts/components/slider.js"></script>
+        <script src="/scripts/components/canvas.js"></script>
+        <script src="/scripts/components/colorpicker.js"></script>
+        <script src="/scripts/components/palettemanager.js"></script>
+        <script src="/scripts/components/toolbox.js"></script>
+        <script src="/scripts/components/toolinfo.js"></script>
+
+        <script src="/scripts/main/index.js" defer></script>
+
+        <px-modal class="main">
+            <template slot="content">
+                <link rel="stylesheet" href="/styles/main/index.css">
+
+                <px-menubar></px-menubar>
+
+                <div class="main-container">
+                    <div class="lmenu sidebar">
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-header-icon bx bxs-color"></span>
+                                <span class="section-header-title">Color Picker</span>
+                                <div class="section-header-line"></div>
+                                <div class="section-header-buttons"></div>
+                            </div>
+                            <px-color-picker></px-color-picker>
+                        </div>
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-header-icon bx bxs-palette"></span>
+                                <span class="section-header-title">Palette Manager</span>
+                                <div class="section-header-line"></div>
+                                <div class="section-header-buttons"></div>
+                            </div>
+                            <px-palette-manager></px-palette-manager>
+                        </div>
+                    </div>
+
+                    <div class="main">
+                        <px-canvas></px-canvas>
+                    </div>
+
+                    <div class="rmenu sidebar">
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-header-icon bx bxs-briefcase"></span>
+                                <span class="section-header-title">Toolbox</span>
+                                <div class="section-header-line"></div>
+                                <div class="section-header-buttons"></div>
+                            </div>
+                            <px-toolbox></px-toolbox>
+                        </div>
+                        <div class="section">
+                            <div class="section-header">
+                                <span class="section-header-icon bx bxs-wrench"></span>
+                                <span class="section-header-title">Tool Info</span>
+                                <div class="section-header-line"></div>
+                                <div class="section-header-buttons"></div>
+                            </div>
+                            <px-tool-info></px-tool-info>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </px-modal>
     </body>
 </html>

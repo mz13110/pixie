@@ -1,3 +1,7 @@
+class NewFileDialog extends Modal {
+
+}
+
 class File {
     static save() {
         
@@ -11,7 +15,7 @@ class File {
 //menubar
 Menubar.addSection("file", "File")
 Menubar.addItems(
-    {name: "New", icon: "bxs-file-plus", id: "file.new", disabled: true},
+    {name: "New", icon: "bxs-file-plus", id: "file.new"},
     {name: "Open", icon: "bxs-file-import", id: "file.open", disabled: true},
     {name: Menubar.SEPARATOR, id: "file"},
     {name: "Save", icon: "bxs-save", id: "file.save", disabled: true},

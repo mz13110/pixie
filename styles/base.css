@@ -1,4 +1,5 @@
-@import url("/lib/normalize.css");
+@import url("/third_party/normalize.css");
+@import url("https://cdn.jsdelivr.net/npm/boxicons@2/css/boxicons.min.css");
 
 :root,
 :host {

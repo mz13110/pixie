@@ -1,24 +1,25 @@
-.menubar {
+.container {
+    height: 100%;
     font-size: 16px;
 }
 
-.menubar-section {
+.section {
     height: 100%;
     padding: 2px 10px;
 
-    display: flex;
+    display: inline-flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
 
     cursor: pointer;
 }
-.menubar-section[data-open="true"] {
+.section[data-open="true"] {
     background-color: var(--bg-2);
 }
 
 
-.menubar-section-container {
+.section-container {
     font-size: 14px;
 
     min-width: 200px;
@@ -29,14 +30,14 @@
     padding-bottom: 3px;
     cursor: default;
 }
-.menubar-section:not([data-open="true"])>.menubar-section-container {
+.section:not([data-open="true"])>.section-container {
     display: none;
 }
 
-.menubar-item:not([data-disabled="true"]):hover {
+.item:not([data-disabled="true"]):hover {
     background-color: var(--bg-2)
 }
-.menubar-item {
+.item {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -45,17 +46,17 @@
     padding: 8px 5px;
     cursor: pointer;
 }
-.menubar-item[data-disabled="true"] {
+.item[data-disabled="true"] {
     color: var(--text-disabled);
     cursor: default;
 }
-.menubar-item>box-icon {
+.item>box-icon {
     width: 18px;
     height: 18px;
     margin-right: 8px;
 }
 
-.menubar-separator {
+.separator {
     width: calc(100% - 2px);
     height: 0px;
     margin-top: 5px;

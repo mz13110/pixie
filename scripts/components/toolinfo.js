@@ -20,7 +20,7 @@ class ToolInfoElement extends HTMLElement {
         this.$sr.innerHTML = `
         <div class="container"></div>`
         getCSS("base").then((css)=>this.$sr.appendChild(css))
-        getCSS("toolinfo").then((css)=>this.$sr.appendChild(css))
+        getCSS("components/toolinfo").then((css)=>this.$sr.appendChild(css))
 
         this.$container = this.$sr.querySelector(".container")
     }

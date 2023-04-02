@@ -39,7 +39,7 @@ class SliderElement extends HTMLElement {
         </div>
         `
         getCSS("base").then((css)=>this.$sr.appendChild(css))
-        getCSS("slider").then((css)=>this.$sr.appendChild(css))
+        getCSS("components/slider").then((css)=>this.$sr.appendChild(css))
 
         this.$container = this.$sr.querySelector(".container")
         this.$slider = this.$sr.querySelector(".slider")
