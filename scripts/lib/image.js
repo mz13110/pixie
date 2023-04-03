@@ -23,7 +23,6 @@ class PNGImage {
 
         let info = {}
 
-        let step = 0 // 0: signature, 1: chunk length, 2: chunk type, 3: chunk data, 4: chunk crc
         let o = 0
 
         try {
@@ -72,96 +71,10 @@ class PNGImage {
 
         return info
     }
-}
 
-window.encodePNG = (png) => {
-    let idatEncountered = false
-    let iendEncountered = false
-    let i = 0
-
-    let out
-
-    function finish() {
-        if(!idatEncountered) throw "missing IDAT"
-
-        out = new Uint8Array(PNG.SIGNATURE.length + packedChunks.reduce((a, c) => a + c.length, 0) + PNG.IEND.length)
-        i = 0
-
-        out.set(PNG.SIGNATURE, i)
-        i += PNG.SIGNATURE.length
-
-        for(let chunk of packedChunks) {
-            out.set(chunk, i)
-            i += chunk.length
-        }
-
-        out.set(PNG.IEND, i)
+    static injectInfo(raw, info) {
+        
     }
-
-    let packedChunks = []
-
-    for(let chunk of chunks) {
-        let type = chunk.type
-
-        if(i === 0 && type !== "IHDR") throw "missing IHDR as first chunk"
-        if(type === "IEND") {
-            finish()
-            break
-        }
-        if(type === "IDAT") idatEncountered = true
-
-        if(typeof type !== "string") throw "chunk type is not a string"
-        if(type.length !== 4) throw "chunk type is not four characters"
-
-        let typeRaw = new Array(4).fill().map((_,i) => type.charCodeAt(i))
-        if(typeRaw.map((c) => (c < 65 || c > 90) && (c < 97 || c > 122)).includes(true)) throw "chunk type can only have ascii letters (a-z A-Z)"
-
-        // assemble data field
-        let chunkData = chunk.raw
-        if("raw" in chunk) {
-            if(typeof chunkData[Symbol.iterator] === "function" || chunkData instanceof ArrayBuffer) chunkData = new Uint8Array(chunkData)
-            else throw `cannot process ${chunkData} as chunk data`
-        }
-        else {
-            switch(type) {
-                case "tEXt": {
-                    let keyword = String(chunk.data.keyword)
-                    if(keyword.startsWith(" ") || keyword.endsWith(" ")) throw "keyword cannot have trailing or leading spaces"
-                    if(/ {2,}/.test(keyword)) throw "keyword cannot have consecutive spaces"
-                    keyword = keyword.split("").map((c) => c.charCodeAt())
-                    if(keyword.map((c) => (c < 32 || c > 126) && (c < 161 || c > 255)).includes(true)) throw "keyword can only have printable latin-1 characters (no NBSP allowed)"
-
-                    let text = String(chunk.data.text)
-                    text = text.split("").map((c) => c.charCodeAt())
-                    if(text.map((c) => c > 255).includes(true)) throw "text can only have latin-1 characters"
-
-                    chunkData = new Uint8Array(keyword.length + 1 + text.length)
-                    chunkData.set(keyword, 0)
-                    chunkData[keyword.length] = 0x00 // null separator
-                    chunkData.set(text, keyword.length+1)
-
-                    break
-                }
-                default: {
-                    throw `unable to encode data for ${type} chunk (probably not implemented)`
-                }
-            }
-        }
-        let chunkLength = chunkData.length
-
-        let data = new Uint8Array(4 + 4 + chunkLength + 4)
-        data.set(uint32ToUint8ArrayBE(chunkLength), 0)
-        data.set(typeRaw, 4)
-        data.set(chunkData, 8)
-        let checksum = crc32(data.slice(4, -4)) // checksum only includes chunk type and data fields, no length field
-        data.set(uint32ToUint8ArrayBE(checksum), 8 + chunkLength)
-
-        packedChunks.push(data)
-        i++
-    }
-    if(!iendEncountered) finish()
-
-    return out
 }
 
 window.decodePNG = (data) => {

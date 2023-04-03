@@ -1,11 +1,13 @@
 @import url("/third_party/normalize.css");
 @import url("https://cdn.jsdelivr.net/npm/boxicons@2/css/boxicons.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap");
 
 :root,
 :host {
     --bg-1: #252525;
     --bg-2: #2a2a2a;
     --bg-3: #3b3b3b;
+    --bg-darken: #19191999;
 
     --text-1: #ffffff;
     --text-2: #000000;
@@ -25,6 +27,12 @@
 
 * {
     box-sizing: border-box;
+
+    color-scheme: dark;
+}
+
+*::-webkit-scrollbar {
+
 }
 
 input[type="date"]:not(.no-base-style),

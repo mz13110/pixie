@@ -123,6 +123,7 @@ class Menubar {
                 if($.dataset.disabled === "true") return
 
                 this.close(section)
+                this.browsing = false
                 listeners.map((l) => l())
             }
             $.appendChild(window.iconClass2Icon(icon, window.getComputedStyle($).getPropertyValue("--text-1")))

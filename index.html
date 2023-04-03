@@ -6,13 +6,10 @@
         <title>Pixie</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/styles/base.css">
-        <link rel="stylesheet" href="/styles/modal.css">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap" rel="stylesheet">
 
         <!-- Icons -->
         <script src="https://cdn.jsdelivr.net/npm/boxicons@2/dist/boxicons.js"></script>
@@ -27,9 +24,13 @@
         <script src="/scripts/lib/util.js"></script>
         <script src="/scripts/lib/image.js"></script>
         <script src="/scripts/lib/css.js"></script>
+        <script>
+            getCSS("base").then((css)=>document.body.appendChild(css))
+        </script>
         <script src="/scripts/lib/state.js"></script>
         <script src="/scripts/lib/shadow.js"></script>
         <script src="/scripts/components/modal.js"></script>
+        <script src="/scripts/components/dialog.js"></script>
         <script src="/scripts/components/menubar.js"></script>
         <script src="/scripts/tool/tool.js"></script>
         <script src="/scripts/tool/tools.js"></script>
@@ -99,5 +100,8 @@
                 </div>
             </template>
         </px-modal>
+        <px-dialog>
+            <template slot="content"><span style="display: block; overflow-wrap: anywhere">ur mom gay lol</span></template>
+        </px-dialog>
     </body>
 </html>
