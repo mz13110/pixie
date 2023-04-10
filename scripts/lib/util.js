@@ -66,7 +66,7 @@ window.customLogger = (namespace) => {
     }
     return console.log.bind(window, `%c${namespace}`, `color: ${contrastColorRGB(...(h[c]))==="black" ? "#000000" : "#ffffff"}; background-color: ${c}; padding: 2px;`)
 }
-window.iconClass2Type = (icon) => icon.startsWith("bxs") ? "solid" : icon.startsWith("bxl") ? "logo" : "regular"
+window.iconClass2Type = (icon) => icon.startsWith("bxs-") ? "solid" : icon.startsWith("bxl-") ? "logo" : "regular"
 window.iconClass2Name = (icon) => icon.split("-").slice(1).join("-")
 window.iconClass2Icon = (icon, color) => {
     let $ = document.createElement("box-icon")

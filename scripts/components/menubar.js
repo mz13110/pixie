@@ -35,11 +35,11 @@ let $menubarfr = null
 let $menubar = null
 document.createElement("px-menubar") // first menubar created will fill $menubar
 window.$menubar = $menubar
-const SEPARATOR = Symbol("separator")
+const MENUBAR_SEPARATOR = Symbol("separator")
 
 class Menubar {
     static get SEPARATOR() {
-        return SEPARATOR
+        return MENUBAR_SEPARATOR
     }
 
     static items = {}
@@ -94,7 +94,7 @@ class Menubar {
     static addItems(...items) {
         for(let item of items) {
             let {name, icon, id: fullId, disabled, listeners} = item
-            if(name === SEPARATOR) {
+            if(name === MENUBAR_SEPARATOR) {
                 let $ = document.createElement("div")
                 $.classList.add("separator")
 

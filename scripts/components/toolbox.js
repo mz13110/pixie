@@ -1,7 +1,7 @@
 class ToolboxElement extends HTMLElement {
     #selection = "pencil"
 
-    set selection(v) {GlobalState.set("toolbox.selection", v)}
+    set selection(v) {Editor.state.set("toolbox.selection", v)}
     get selection() {return this.#selection}
 
     constructor() {
@@ -15,7 +15,7 @@ class ToolboxElement extends HTMLElement {
         getCSS("base").then((css)=>this.$sr.appendChild(css))
         getCSS("components/toolbox").then((css)=>this.$sr.appendChild(css))
 
-        GlobalState.sub("toolbox.selection", (v) => {this.#selection = v; this.onSelectionChanged()})
+        Editor.state.sub("toolbox.selection", (v) => {this.#selection = v; this.onSelectionChanged()})
 
         this.$tools = this.$sr.querySelector(".tools")
 

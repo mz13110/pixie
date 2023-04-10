@@ -3,19 +3,19 @@ class ColorPickerElement extends HTMLElement {
     #sat = 100
     #val = 100
 
-    set hue(v) {GlobalState.set("colorpicker.color.hue", v)}
+    set hue(v) {Editor.state.set("colorpicker.color.hue", v)}
     get hue() {return this.#hue}
-    set sat(v) {GlobalState.set("colorpicker.color.sat", v)}
+    set sat(v) {Editor.state.set("colorpicker.color.sat", v)}
     get sat() {return this.#sat}
-    set val(v) {GlobalState.set("colorpicker.color.val", v)}
+    set val(v) {Editor.state.set("colorpicker.color.val", v)}
     get val() {return this.#val}
 
     constructor() {
         super()
 
-        GlobalState.sub("colorpicker.color.hue", (v) => {this.#hue = v; this.onChanged()})
-        GlobalState.sub("colorpicker.color.sat", (v) => {this.#sat = v; this.onChanged()})
-        GlobalState.sub("colorpicker.color.val", (v) => {this.#val = v; this.onChanged()})
+        Editor.state.sub("colorpicker.color.hue", (v) => {this.#hue = v; this.onChanged()})
+        Editor.state.sub("colorpicker.color.sat", (v) => {this.#sat = v; this.onChanged()})
+        Editor.state.sub("colorpicker.color.val", (v) => {this.#val = v; this.onChanged()})
 
         this.attachShadow({
             mode: "open"

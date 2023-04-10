@@ -7,101 +7,258 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <script src="/scripts/lib/cache.js"></script>
 
-        <!-- Icons -->
-        <script src="https://cdn.jsdelivr.net/npm/boxicons@2/dist/boxicons.js"></script>
+        <link rel="icon" href="/logo/favicon.ico">
     </head>
     <body>
-        <!-- Libraries -->
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js"></script>
-        <script src="/third_party/buffer.pngjs.js"></script> <!-- pngjs' browser version didnt work so i browserified it myself :( -->
-
-        <script src="/scripts/polyfill/shadow.js"></script>
-        <script src="/scripts/lib/util.js"></script>
-        <script src="/scripts/lib/image.js"></script>
-        <script src="/scripts/lib/css.js"></script>
         <script>
-            getCSS("base").then((css)=>document.body.appendChild(css))
-        </script>
-        <script src="/scripts/lib/state.js"></script>
-        <script src="/scripts/lib/shadow.js"></script>
-        <script src="/scripts/components/modal.js"></script>
-        <script src="/scripts/components/dialog.js"></script>
-        <script src="/scripts/components/menubar.js"></script>
-        <script src="/scripts/tool/tool.js"></script>
-        <script src="/scripts/tool/tools.js"></script>
-        <script src="/scripts/file.js"></script>
-        <script src="/scripts/edit.js"></script>
-        <script src="/scripts/components/slider.js"></script>
-        <script src="/scripts/components/canvas.js"></script>
-        <script src="/scripts/components/colorpicker.js"></script>
-        <script src="/scripts/components/palettemanager.js"></script>
-        <script src="/scripts/components/toolbox.js"></script>
-        <script src="/scripts/components/toolinfo.js"></script>
+            const FAKE_DELAY = 750
+            const FADEOUT_TIME = 200
 
-        <script src="/scripts/main/index.js" defer></script>
+            document.body.innerHTML = `
+                <style class="ld-style">
+                    .ld-loader * {
+                        box-sizing: content-box;
+                    }
+                    .ld-loader {
+                        box-sizing: content-box;
 
-        <px-modal class="main">
-            <template slot="content">
-                <link rel="stylesheet" href="/styles/main/index.css">
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
 
-                <px-menubar></px-menubar>
+                        --ca: #444444;
+                        --cb: #ffffff;
 
-                <div class="main-container">
-                    <div class="lmenu sidebar">
-                        <div class="section">
-                            <div class="section-header">
-                                <span class="section-header-icon bx bxs-color"></span>
-                                <span class="section-header-title">Color Picker</span>
-                                <div class="section-header-line"></div>
-                                <div class="section-header-buttons"></div>
+                        width: 100vw;
+                        height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+
+                        font-family: Barlow, "Barlow Semi Condensed", sans-serif;
+
+                        z-index: 99999;
+                        pointer-events: none;
+                        background-color: var(--cb);
+
+                        opacity: 1;
+                    }
+                    .ld-loader[data-fadeout="true"] {
+                        opacity: 0;
+                        transition: opacity ${FADEOUT_TIME}ms linear;
+                    }
+                    .ld-spinner {
+                        --t: 14px;
+                        --img: url("/logo/logo-5.png");
+
+                        width: min(max(15vw, 15vh, 150px), 200px);
+                        height: min(max(15vw, 15vh, 150px), 200px);
+
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        position: relative;
+                    }
+                    .ld-spinner::before {
+                        content: "";
+                        display: block;
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 100%;
+
+                        border: solid var(--t) var(--ca);
+                        border-color: var(--ca) transparent var(--ca) transparent;
+                        box-sizing: border-box;
+
+                        animation: ld-spinner 2s linear infinite;
+                    }
+
+                    @media (prefers-color-scheme: dark) {
+                        .ld-loader {
+                            --ca: #bbbbbb;
+                            --cb: #252525;
+                        }
+                        .ld-spinner {
+                            --img: url("/logo/dark-5.png");
+                        }
+                    }
+
+                    .ld-spinner::after {
+                        content: "";
+                        display: block;
+
+                        width: calc(0.707106781187 * calc(100% - var(--t) * 2));
+                        height: calc(0.707106781187 * calc(100% - var(--t) * 2));
+                        background-image: var(--img);
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        image-rendering: pixelated;
+                        animation: ld-spinner 2s linear infinite reverse;
+                    }
+
+                    .ld-bar {
+                        --p: 0%;
+
+                        margin-top: 16px;
+
+                        border: 6px solid var(--ca);
+
+                        width: min(max(30vw, 200px), calc(100% - 10px));
+                        height: 30px;
+
+                        position: relative;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .ld-bar::before {
+                        content: "";
+                        display: block;
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+
+                        width: 100%;
+                        height: 100%;
+
+                        background-image: linear-gradient(90deg, var(--ca) var(--p), transparent var(--p));
+                    }
+                    .ld-bar>div {
+                        position: relative;
+                        font-size: 24px;
+                        font-weight: bold;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .ld-bar>div>div {
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+                        color: transparent;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .ld-bar>div>div>div {
+                        flex-grow: 1;
+                        height: 100%;
+                        padding: 0px 5px;
+                    }
+
+                    .ld-bar div[p] {
+                        text-align: left
+                    }
+                    .ld-bar div[f] {
+                        text-align: right;
+                    }
+
+                    .ld-bar div[a] {
+                        clip-path: polygon(0% 0%, var(--p) 0%, var(--p) 100%, 0% 100%);
+
+                        color: var(--cb);
+                    }
+                    .ld-bar div[b] {
+                        clip-path: polygon(100% 0%, var(--p) 0%, var(--p) 100%, 100% 100%);
+
+                        color: var(--ca);
+                    }
+
+                    @keyframes ld-spinner {
+                        0% {
+                            transform: rotate(0deg);
+                        }
+                        100% {
+                            transform: rotate(360deg);
+                        }
+                    }
+                </style>
+                <div class="ld-loader">
+                    <div class="ld-spinner"></div>
+                    <div class="ld-bar">
+                        <div>
+                            <div a>
+                                <div p>0%</div>
+                                <div f>0/1</div>
                             </div>
-                            <px-color-picker></px-color-picker>
-                        </div>
-                        <div class="section">
-                            <div class="section-header">
-                                <span class="section-header-icon bx bxs-palette"></span>
-                                <span class="section-header-title">Palette Manager</span>
-                                <div class="section-header-line"></div>
-                                <div class="section-header-buttons"></div>
+                            <div b>
+                                <div p>0%</div>
+                                <div f>0/1</div>
                             </div>
-                            <px-palette-manager></px-palette-manager>
                         </div>
                     </div>
-
-                    <div class="main">
-                        <px-canvas></px-canvas>
-                    </div>
-
-                    <div class="rmenu sidebar">
-                        <div class="section">
-                            <div class="section-header">
-                                <span class="section-header-icon bx bxs-briefcase"></span>
-                                <span class="section-header-title">Toolbox</span>
-                                <div class="section-header-line"></div>
-                                <div class="section-header-buttons"></div>
-                            </div>
-                            <px-toolbox></px-toolbox>
-                        </div>
-                        <div class="section">
-                            <div class="section-header">
-                                <span class="section-header-icon bx bxs-wrench"></span>
-                                <span class="section-header-title">Tool Info</span>
-                                <div class="section-header-line"></div>
-                                <div class="section-header-buttons"></div>
-                            </div>
-                            <px-tool-info></px-tool-info>
-                        </div>
-                    </div>
+                    <div class="ld-caption"></div>
                 </div>
-            </template>
-        </px-modal>
-        <px-dialog>
-            <template slot="content"><span style="display: block; overflow-wrap: anywhere">ur mom gay lol</span></template>
-        </px-dialog>
+            `
+
+            let $ = document.querySelector(".ld-loader")
+            let $b = $.querySelector(".ld-bar")
+            let $p = $.querySelectorAll("div[p]")
+            let $f = $.querySelectorAll("div[f]")
+
+            let c = 0
+            let t = 0
+
+            let u = () => {
+                let p = Math.round((c/t*100)) + "%"
+                $p.forEach(($)=>$.innerText = p)
+                $f.forEach(($)=>$.innerText = `${c}/${t}`)
+                $b.style.setProperty("--p", p)
+
+            }
+
+            let assets = []
+            let tasks = [
+                // get asset list
+                async () => fetch("/init/assets.txt").then(async (res) => {
+                    assets = (await res.text()).split("\n")
+                    t += assets.length
+                }),
+
+                // fetch assets
+                async () => await Promise.all(assets.map((a) => cachedFetch(a).then(()=>{c++;u()}))),
+
+                // load scripts
+                async () => {
+                    let scripts = (await cachedFetch("/init/scripts.txt")).text.split("\n")
+                    for(let script of scripts) {
+                        if(script === "") continue
+                        let $ = document.createElement("script")
+                        $.innerHTML = (await cachedFetch(script)).text
+                        document.body.appendChild($)
+                    }
+                }
+            ]
+
+            c = 0
+            t = tasks.length
+            u()
+
+            {(async()=>{
+                for(let task of tasks) {
+                    await task()
+                    c++
+                    u()
+                }
+            })().then(() => {
+                setTimeout(() => {
+                    $.dataset.fadeout = true
+                    setTimeout(() => {
+                        $.remove()
+                    }, FADEOUT_TIME)
+                }, FAKE_DELAY)
+            })}
+        </script>
     </body>
 </html>

@@ -1,0 +1,22 @@
+.dialog-actions {
+    margin-top: auto;
+    
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    gap: 8px;
+}
+.dialog-action {
+    width: 75px;
+    height: 30px;
+
+    display: flex;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}

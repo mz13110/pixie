@@ -1,0 +1,47 @@
+.container {
+    display: flex;
+    flex-direction: column;
+}
+.configurator-section {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 8px;
+
+    width: 100%;
+    padding-left: 16px;
+}
+.configurator-header {
+    width: 100%;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    user-select: none;
+}
+.configurator-name {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    user-select: none;
+}
+.configurator-item {
+}
+.configurator-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* slider */
+.configurator-field[data-type="slider"]>input[type="range"] {
+
+}
+.configurator-field[data-type="slider"]>input[type="number"] {
+    height: 24px;
+}
+
+/* number */
+.configurator-field[data-type="number"]>input[type="number"] {
+    width: 96px;
+    height: 32px;
+}

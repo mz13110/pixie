@@ -1,14 +1,17 @@
-let log = customLogger("GlobalState")
+class State {
+    log = customLogger("State")
+    data = {}
+    listeners = {}
 
-class GlobalState {
-    static data = {}
-    static listeners = {}
+    constructor(namespace) {
+        if(typeof namespace === "string") this.log = customLogger(namespace)
+    }
 
-    static set(k, v) {
+    set(k, v) {
         if(!typeof k === "string") throw `Entry keys must be a string, got ${typeof v}.`
         if(!["object", "number", "string", "boolean"].includes(typeof v)) throw `Entry values must be an object, array, number, string, boolean, or null, got ${typeof v}.`
 
-        log("𝘀𝗲𝘁", k, "=", v)
+        this.log("𝘀𝗲𝘁", k, "=", v)
 
         k = k.toLowerCase()
         let o = this.data
@@ -26,8 +29,8 @@ class GlobalState {
             }
         }
     }
-    static get(k, d) {
-        log("𝗴𝗲𝘁", k)
+    get(k, d) {
+        this.log("𝗴𝗲𝘁", k)
         k = k.toLowerCase()
         let o = this.data
         for(let dir of k.split(".").slice(0, -1)) {
@@ -38,7 +41,7 @@ class GlobalState {
         return o[k.split(".").slice(-1)] ?? d
     }
 
-    static sub(k, cb) {
+    sub(k, cb) {
         if(!Array.isArray(k)) k = [k]
         k.map((t) => {
             if(this.listeners[t]) this.listeners[t].push(cb)
@@ -46,10 +49,10 @@ class GlobalState {
         })
     }
 
-    static import(raw) {
+    import(raw) {
         this.data = JSON.parse(raw)
     }
-    static export() {
+    export() {
         return JSON.stringify(this.data)
     }
 }

@@ -1,4 +1,3 @@
-const INFINITY_EQUIVALENT = 10000
 const SLIDER_INFINITY_EQUIVALENT = 1000
 
 class SliderElement extends HTMLElement {
@@ -60,17 +59,16 @@ class SliderElement extends HTMLElement {
             let n = this.$number.value
             this.value = this.$number.value
             if(this.value !== n) {// change was reverted
-                console.log("reverted")
-                this.$number.value = n // revert the reversion because techinically we are still editing
+                this.$number.value = n // revert the reversion because technically we are still editing
             }
         }
         this.$number.onchange = (e) => {
             e.stopPropagation() // the event might bubble out shadow root
 
             this.value = Math.clamp(
-                this.value,
-                this.min == Infinity ? INFINITY_EQUIVALENT : this.min,
-                this.max == Infinity ? INFINITY_EQUIVALENT : this.max) // use == instead of === because this.max might be a string
+                Math.round(this.value / this.step) * this.step,
+                this.min == Infinity ? SLIDER_INFINITY_EQUIVALENT : this.min,
+                this.max == Infinity ? SLIDER_INFINITY_EQUIVALENT : this.max) // use == instead of === because this.max might be a string
             this.dispatchEvent(new Event("change"))
         }
 

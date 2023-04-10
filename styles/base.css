@@ -21,7 +21,7 @@
 
     --selected: #099cff;
 
-    font-family: 'Barlow', sans-serif;
+    font-family: 'Barlow', 'Barlow Semi Condensed', sans-serif;
     color: var(--text-1);
 }
 
@@ -90,16 +90,25 @@ input[type="range"]:not(.no-base-style) {
     background-color: var(--bg-3);
     border-radius: 100vh;
     height: 10px;
+    margin: 10px 0px;
+}
+input[type="range"]:not(.no-base-style)::-webkit-slider-runnable-track {
+    z-index: 0;
 }
 input[type="range"]:not(.no-base-style)::-webkit-slider-thumb {
     appearance: none;
     border: 1px solid var(--accent-2);
     background-color: var(--bg-2);
-    border-radius: 100vh;
-    height: 15px;
-    width: 15px;
+    border-radius: 20px;
+    height: 20px;
+    width: 20px;
+    z-index: 1;
+}
+
+input[type="number"]:not(.no-base-style)::-webkit-inner-spin-button {
+    opacity: 1; /* force spin buttons to always appear */
 }
 
 input:focus {
-    outline: 2px solid var(--selected);
+    outline: 1px solid var(--selected);
 }

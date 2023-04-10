@@ -10,7 +10,7 @@ class Tool {
     get icon() {return this.#icon}
 
     get props() {return this.#props}
-    set props(v) {GlobalState.set(`tools.${this.id}`, v)}
+    set props(v) {Editor.state.set(`tools.${this.id}`, v)}
 
     constructor(name, id, icon, schema) {
         this.#name = name ?? "untitled tool"
@@ -19,14 +19,14 @@ class Tool {
 
         this.schema = schema ?? {}
         for(let [k, i] of Object.entries(this.schema)) {
-            this.setProp(`tools.${this.id}.${k}`, GlobalState.get(`tools.${this.id}.${k}`) ?? i.default)
+            this.setProp(`tools.${this.id}.${k}`, Editor.state.get(`tools.${this.id}.${k}`) ?? i.default)
         }
 
-        GlobalState.sub(`tools.${this.id}`, (v) => {this.#props = v; this.onPropsChanged()})
+        Editor.state.sub(`tools.${this.id}`, (v) => {this.#props = v; this.onPropsChanged()})
     }
 
     setProp(k, v) {
-        GlobalState.set(`tools.${this.id}.${k}`, v)
+        Editor.state.set(`tools.${this.id}.${k}`, v)
     }
     getProp(k) {
         return this.props[k]

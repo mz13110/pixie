@@ -12,26 +12,26 @@ class PaletteManagerElement extends HTMLElement {
 
     #mode = "normal" // "normal", "deleting", "editing", or "rearranging"
 
-    set colors(v) {GlobalState.set("palettemanager.colors", v)}
+    set colors(v) {Editor.state.set("palettemanager.colors", v)}
     get colors() {return this.#colors} // this.#colors will be a readonly array of readonly colors because it is impossible to watch for changes
 
-    set selectionID(v) {GlobalState.set("palettemanager.selection.id", v)}
+    set selectionID(v) {Editor.state.set("palettemanager.selection.id", v)}
     get selectionID() {return this.#selection.id}
 
-    set selectionColor(v) {GlobalState.set("palettemanager.selection.color", v)}
+    set selectionColor(v) {Editor.state.set("palettemanager.selection.color", v)}
     get selectionColor() {return this.#selection.color}
 
-    set selectionHue(v) {GlobalState.set("palettemanager.selection.color.hue", v)}
+    set selectionHue(v) {Editor.state.set("palettemanager.selection.color.hue", v)}
     get selectionHue() {return this.#selection.color.hue}
 
-    set selectionSat(v) {GlobalState.set("palettemanager.selection.color.sat", v)}
+    set selectionSat(v) {Editor.state.set("palettemanager.selection.color.sat", v)}
     get selectionSat() {return this.#selection.color.sat}
 
-    set selectionVal(v) {GlobalState.set("palettemanager.selection.color.val", v)}
+    set selectionVal(v) {Editor.state.set("palettemanager.selection.color.val", v)}
     get selectionVal() {return this.#selection.color.val}
 
 
-    set mode(v) {GlobalState.set("palettemanager.mode", v)}
+    set mode(v) {Editor.state.set("palettemanager.mode", v)}
     get mode() {return this.#mode}
 
 
@@ -66,17 +66,17 @@ class PaletteManagerElement extends HTMLElement {
             ghostClass: "sort-ghost" // disable sorting by default
         })
 
-        GlobalState.sub("colorpicker.color", ({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))
+        Editor.state.sub("colorpicker.color", ({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))
 
 
-        GlobalState.sub("palettemanager.colors", (v) => {this.#colors = v; this.onPaletteChanged()})
-        GlobalState.sub("palettemanager.selection.id", (v) => {this.#selection.id = v; this.onSelectionChanged()})
-        GlobalState.sub("palettemanager.mode", (v) => {this.#mode = v; this.onModeChanged()})
+        Editor.state.sub("palettemanager.colors", (v) => {this.#colors = v; this.onPaletteChanged()})
+        Editor.state.sub("palettemanager.selection.id", (v) => {this.#selection.id = v; this.onSelectionChanged()})
+        Editor.state.sub("palettemanager.mode", (v) => {this.#mode = v; this.onModeChanged()})
 
 
         this.$add.onmousedown = () => {
             if(this.selectionID === -1) {// -1 is the color picker
-                let c = GlobalState.get("colorpicker.color")
+                let c = Editor.state.get("colorpicker.color")
                 this.addColor(c.hue, c.sat, c.val)
                 this.selectionID = this.indexOfColor(c.hue, c.sat, c.val)
             }
@@ -84,7 +84,7 @@ class PaletteManagerElement extends HTMLElement {
         }
 
 
-        {(({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))(GlobalState.get("colorpicker.color"))}
+        {(({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))(Editor.state.get("colorpicker.color"))}
 
         this.mode = "normal"
     }
@@ -159,15 +159,16 @@ class PaletteManagerElement extends HTMLElement {
     }
     onModeChanged() {
         if(this.$section) {
+            let c = window.getComputedStyle(this.$sectionHeaderButtons).getPropertyValue("--selected");
             this.$sectionHeaderButtons.innerHTML = `
-            <div class="section-header-button palette-manager-header-delete-button"${this.mode === "deleting" ? 'data-active="true"' : ""}>
-                <i class="bx bxs-trash"></i>
+            <div class="section-header-button palette-manager-header-delete-button">
+                <box-icon name="trash" type="solid" color="${this.mode === "deleting" ? c : "#ffffff"}"></box-icon>
             </div>
-            <div class="section-header-button palette-manager-header-move-button"${this.mode === "rearranging" ? 'data-active="true"' : ""}>
-                <i class="bx bx-move"></i>
+            <div class="section-header-button palette-manager-header-move-button">
+                <box-icon name="move" type="regular" color="${this.mode === "rearranging" ? c : "#ffffff"}"></box-icon>
             </div>
-            <div class="section-header-button palette-manager-header-edit-button"${this.mode === "editing" ? 'data-active="true"' : ""}>
-                <i class="bx bxs-edit-alt"></i>
+            <div class="section-header-button palette-manager-header-edit-button">
+                <box-icon name="edit-alt" type="solid" color="${this.mode === "editing" ? c : "#ffffff"}"></box-icon>
             </div>`
             this.$sectionHeaderButtons.querySelector(".palette-manager-header-delete-button").onclick = () => this.mode = this.mode === "deleting" ? "normal" : "deleting"
             this.$sectionHeaderButtons.querySelector(".palette-manager-header-move-button").onclick = () => this.mode = this.mode === "rearranging" ? "normal" : "rearranging"
@@ -206,7 +207,7 @@ class PaletteManagerElement extends HTMLElement {
     }
 
     getColor(id) {
-        if(id === -1) return GlobalState.get("colorpicker.color")
+        if(id === -1) return Editor.state.get("colorpicker.color")
         return this.colors[id]
     }
 
