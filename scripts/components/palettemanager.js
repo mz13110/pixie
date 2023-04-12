@@ -131,7 +131,8 @@ class PaletteManagerElement extends HTMLElement {
                 else this.selection = parseInt($.dataset.id)
             }
 
-            this.$colors.insertBefore($, this.$add)
+            this.$colors.appendChild($)
+            this.$colors.appendChild(this.$add)
         }
     }
     onSelectionChanged() {
