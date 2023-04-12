@@ -1,3 +1,5 @@
+Editor.state.setDefault("toolbox.selection", "pencil")
+
 class ToolboxElement extends HTMLElement {
     #selection = "pencil"
 
@@ -15,12 +17,12 @@ class ToolboxElement extends HTMLElement {
         getCSS("base").then((css)=>this.$sr.appendChild(css))
         getCSS("components/toolbox").then((css)=>this.$sr.appendChild(css))
 
-        Editor.state.sub("toolbox.selection", (v) => {this.#selection = v; this.onSelectionChanged()})
-
         this.$tools = this.$sr.querySelector(".tools")
 
         ToolRegistry.sub(this.onToolAdded)
         ToolRegistry.tools.map((t)=>this.onToolAdded(t))
+
+        Editor.state.sub("toolbox.selection", (v) => {this.#selection = v; this.onSelectionChanged()})
     }
 
     onToolAdded(tool) {

@@ -66,7 +66,7 @@ DialogExtensionRegistry.add({
                     case "slider": {
                         field = Object.assign({min: 0, max: 100, step: 1, input: true}, field)
                         field.default = field.default ?? field.min
-                        field.listeners = Object.assign({input: [], change: []}, field.listeners ?? {})
+                        field.listeners = Object.assign({change: []}, field.listeners ?? {})
 
                         $.dataset.type = "slider"
                         $.dataset.input = field.input
@@ -82,7 +82,7 @@ DialogExtensionRegistry.add({
                             $s.value = v
                             if(field.input) $i.value = v
                             value = v
-                            field.listeners.input.map((f)=>f(v))
+                            field.listeners.change.map((f)=>f(v))
                         }
 
                         $s.setValue = setValue
@@ -124,7 +124,7 @@ DialogExtensionRegistry.add({
                         function setValue(v) {
                             $i.value = v
                             value = v
-                            field.listeners.input.map((f)=>f(v))
+                            field.listeners.change.map((f)=>f(v))
                         }
                         setValue(field.default)
 
@@ -136,6 +136,24 @@ DialogExtensionRegistry.add({
 
                         $.appendChild($i)
                         break
+                    }
+                    case "bool": {
+                        field = Object.assign({default: false}, field)
+                        field.listeners = Object.assign({input: []}, field.listeners ?? {})
+
+                        $.dataset.type = "bool"
+
+                        let $i = document.createElement("input")
+                        $i.type = "checkbox"
+                        $i.checked = !!field.default
+
+                        $i.onchange = (e) => field.listeners.change.map((f)=>f($i.checked))
+
+                        $.appendChild($i)
+                        break
+                    }
+                    default: {
+                        throw `unknown configurator field type "${field.type}"`
                     }
                 }
 

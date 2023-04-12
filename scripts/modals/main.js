@@ -28,7 +28,7 @@ class MainModal extends Modal {
                 </div>
 
                 <div class="main">
-                    <px-canvas></px-canvas>
+                    <px-viewport></px-viewport>
                 </div>
 
                 <div class="rmenu sidebar">
@@ -59,7 +59,7 @@ class MainModal extends Modal {
         Editor.state.sub("toolbox.selection", (v) => {
             this.$.querySelector("px-tool-info").tool = ToolRegistry.get(v)
 
-            this.$.querySelector("px-canvas").tool = ToolRegistry.get(v)
+            this.$.querySelector("px-viewport").$canvas.tool = ToolRegistry.get(v)
         })
         if(!Editor.state.get("toolbox.selection")) Editor.state.set("toolbox.selection", "pencil")
 

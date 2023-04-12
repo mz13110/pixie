@@ -62,7 +62,7 @@ class Dialog extends Modal {
             let $ = document.createElement("div")
             $.classList.add("button", "no-base-style")
             $.appendChild(iconClass2Icon(icon, "#ffffff"))
-            $.onclick = () => listeners.map((f)=>f())
+            $.onclick = () => listeners.map(function(l){l()})
 
             this.$buttons.appendChild($)
             this.buttons[id] = {id, icon, $, listeners}

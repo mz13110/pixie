@@ -11,6 +11,7 @@ logo/logo-15.png
 logo/logo-30.png
 logo/logo-5.png
 logo/logo-90.png
+pz.html
 scripts/components/canvas.js
 scripts/components/colorpicker.js
 scripts/components/menubar.js
@@ -18,6 +19,7 @@ scripts/components/palettemanager.js
 scripts/components/slider.js
 scripts/components/toolbox.js
 scripts/components/toolinfo.js
+scripts/components/viewport.js
 scripts/const.js
 scripts/dialog/dialog.js
 scripts/dialog/extensions/actions.js
@@ -28,6 +30,7 @@ scripts/edit.js
 scripts/editor.js
 scripts/file.js
 scripts/index.js
+scripts/lib/bus.js
 scripts/lib/cache.js
 scripts/lib/image.js
 scripts/lib/shadow.js
@@ -55,5 +58,8 @@ styles/dialogs/newfile.css
 styles/modal/content.css
 styles/modal/modal.css
 styles/modals/main.css
+test.html
 third_party/buffer.pngjs.js
+third_party/buffer.pngjs.js.bak
 third_party/normalize.css
+third_party/pinchzoom.min.js

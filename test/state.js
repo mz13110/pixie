@@ -1,3 +1,4 @@
+customLogger = ()=>console.debug
 class State {
     log = customLogger("State")
     data = {}
@@ -18,15 +19,17 @@ class State {
         k = k.toLowerCase()
         let o = this.data
         for(let dir of k.split(".").slice(0, -1)) {
-            if(typeof o === "object" && dir in o) o = o[dir]
+            if(typeof o === "object" && dir in o) o[dir]
             else o = o = (o[dir] = {})
         }
 
         v = JSON.parse(JSON.stringify(v))
-        o[k.split(".").pop()] = v
+        o[k.split(".").slice(-1)] = v
+
+        console.log("bruh", this.data)
 
         for(let [t, cb] of Object.entries(this.listeners)) {
-            if(k === t || k.startsWith(t + ".")) cb.map((f)=>f(this.get(t)))
+            if(k.startsWith(t)) cb.map((f)=>f(v))
         }
     }
     setDefault(k, v) {
@@ -42,7 +45,10 @@ class State {
         let od = this.data
         let dir
         for(dir of k.split(".").slice(0, -1)) {
-            if(dir in o) o = o[dir]
+            if(dir in o) {
+                o = o[dir]
+                if(t === false) od = od[dir]
+            }
             else o = (o[dir] = {})
 
             if(typeof od === "object" && !(dir in od)) t = true
@@ -55,7 +61,7 @@ class State {
 
         if(t) {
             for(let [t, cb] of Object.entries(this.listeners)) {
-                if(k.startsWith(t)) cb.map((f)=>f(this.getDefault(t)))
+                if(k.startsWith(t)) cb.map((f)=>f(v))
             }
         }
     }
@@ -101,15 +107,13 @@ class State {
 
     import(raw) {
         this.data = JSON.parse(raw)
-
-        for(let [t, cb] of Object.entries(this.listeners)) cb.map((f)=>f(this.get(t)))
-    }
-    load(raw) {
-        this.data = JSON.parse(raw)
-
-        for(let [t, cb] of Object.entries(this.listeners)) cb.map((f)=>f(this.get(t)))
     }
     export() {
         return JSON.stringify(this.data)
     }
 }
+
+let s = new State()
+s.setDefault("a.b", {a: 1, b: 1, c: 1})
+s.set("a.b.a", 2)
+console.log("a.b =", s.get("a.b"))

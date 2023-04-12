@@ -19,7 +19,7 @@ class Tool {
 
         this.schema = schema ?? {}
         for(let [k, i] of Object.entries(this.schema)) {
-            this.setProp(`tools.${this.id}.${k}`, Editor.state.get(`tools.${this.id}.${k}`) ?? i.default)
+            Editor.state.setDefault(`tools.${this.id}.${k}`, i.default)
         }
 
         Editor.state.sub(`tools.${this.id}`, (v) => {this.#props = v; this.onPropsChanged()})

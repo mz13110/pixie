@@ -201,64 +201,73 @@
                     <div class="ld-caption"></div>
                 </div>
             `
+            window.loaded = new Promise((resolve, reject) => {
+                let $ = document.querySelector(".ld-loader")
+                let $b = $.querySelector(".ld-bar")
+                let $p = $.querySelectorAll("div[p]")
+                let $f = $.querySelectorAll("div[f]")
 
-            let $ = document.querySelector(".ld-loader")
-            let $b = $.querySelector(".ld-bar")
-            let $p = $.querySelectorAll("div[p]")
-            let $f = $.querySelectorAll("div[f]")
+                let c = 0
+                let t = 0
 
-            let c = 0
-            let t = 0
+                let u = () => {
+                    let p = Math.round((c/t*100)) + "%"
+                    $p.forEach(($)=>$.innerText = p)
+                    $f.forEach(($)=>$.innerText = `${c}/${t}`)
+                    $b.style.setProperty("--p", p)
 
-            let u = () => {
-                let p = Math.round((c/t*100)) + "%"
-                $p.forEach(($)=>$.innerText = p)
-                $f.forEach(($)=>$.innerText = `${c}/${t}`)
-                $b.style.setProperty("--p", p)
+                }
 
-            }
+                let assets = []
+                let tasks = [
+                    // get asset list
+                    async () => fetch("/init/assets.txt").then(async (res) => {
+                        assets = (await res.text()).split("\n")
+                        t += assets.length
+                    }),
 
-            let assets = []
-            let tasks = [
-                // get asset list
-                async () => fetch("/init/assets.txt").then(async (res) => {
-                    assets = (await res.text()).split("\n")
-                    t += assets.length
-                }),
+                    // fetch assets
+                    async () => await Promise.all(assets.map((a) => cachedFetch(a).then(()=>{c++;u()}))),
 
-                // fetch assets
-                async () => await Promise.all(assets.map((a) => cachedFetch(a).then(()=>{c++;u()}))),
-
-                // load scripts
-                async () => {
-                    let scripts = (await cachedFetch("/init/scripts.txt")).text.split("\n")
-                    for(let script of scripts) {
-                        if(script === "") continue
-                        let $ = document.createElement("script")
-                        $.innerHTML = (await cachedFetch(script)).text
-                        document.body.appendChild($)
+                    // load scripts
+                    async () => {
+                        let scripts = (await cachedFetch("/init/scripts.txt")).text.split("\n")
+                        for(let script of scripts) {
+                            if(script === "") continue
+                            let $ = document.createElement("script")
+                            $.innerHTML = (await cachedFetch(script)).text
+                            document.body.appendChild($)
+                        }
                     }
-                }
-            ]
+                ]
 
-            c = 0
-            t = tasks.length
-            u()
+                c = 0
+                t = tasks.length
+                u()
 
-            {(async()=>{
-                for(let task of tasks) {
-                    await task()
-                    c++
-                    u()
-                }
-            })().then(() => {
-                setTimeout(() => {
-                    $.dataset.fadeout = true
+                let stop = false
+                {(async()=>{
+                    for(let task of tasks) {
+                        await task().catch((e) => {
+                            alert("an error occurred while loading, please refresh the page")
+                            alert(e)
+                            stop = true
+                        })
+                        if(stop) break
+                        c++
+                        u()
+                    }
+                })().then(() => {
+                    if(stop) return
                     setTimeout(() => {
-                        $.remove()
-                    }, FADEOUT_TIME)
-                }, FAKE_DELAY)
-            })}
+                        $.dataset.fadeout = true
+                        setTimeout(() => {
+                            $.style.display = "none";
+                            resolve()
+                        }, FADEOUT_TIME)
+                    }, FAKE_DELAY)
+                })}
+            })
         </script>
     </body>
 </html>

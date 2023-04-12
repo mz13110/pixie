@@ -1,35 +1,23 @@
+Editor.state.setDefault("palettemanager.colors", [])
+Editor.state.setDefault("palettemanager.selection", {
+    id: -1,
+    color: Editor.state.getDefault("colorpicker.color")
+})
+
 class PaletteManagerElement extends HTMLElement {
     #colors = []
 
-    #selection = {
-        id: 0,
-        color: {
-            hue: 0,
-            sat: 100,
-            val: 100
-        }
-    }
+    #selection = -1
 
     #mode = "normal" // "normal", "deleting", "editing", or "rearranging"
 
     set colors(v) {Editor.state.set("palettemanager.colors", v)}
     get colors() {return this.#colors} // this.#colors will be a readonly array of readonly colors because it is impossible to watch for changes
 
-    set selectionID(v) {Editor.state.set("palettemanager.selection.id", v)}
-    get selectionID() {return this.#selection.id}
+    set selection(v) {Editor.state.set("palettemanager.selection.id", v)}
+    get selection() {return this.#selection}
 
     set selectionColor(v) {Editor.state.set("palettemanager.selection.color", v)}
-    get selectionColor() {return this.#selection.color}
-
-    set selectionHue(v) {Editor.state.set("palettemanager.selection.color.hue", v)}
-    get selectionHue() {return this.#selection.color.hue}
-
-    set selectionSat(v) {Editor.state.set("palettemanager.selection.color.sat", v)}
-    get selectionSat() {return this.#selection.color.sat}
-
-    set selectionVal(v) {Editor.state.set("palettemanager.selection.color.val", v)}
-    get selectionVal() {return this.#selection.color.val}
-
 
     set mode(v) {Editor.state.set("palettemanager.mode", v)}
     get mode() {return this.#mode}
@@ -66,31 +54,27 @@ class PaletteManagerElement extends HTMLElement {
             ghostClass: "sort-ghost" // disable sorting by default
         })
 
-        Editor.state.sub("colorpicker.color", ({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))
-
-
-        Editor.state.sub("palettemanager.colors", (v) => {this.#colors = v; this.onPaletteChanged()})
-        Editor.state.sub("palettemanager.selection.id", (v) => {this.#selection.id = v; this.onSelectionChanged()})
-        Editor.state.sub("palettemanager.mode", (v) => {this.#mode = v; this.onModeChanged()})
-
 
         this.$add.onmousedown = () => {
-            if(this.selectionID === -1) {// -1 is the color picker
+            if(this.selection === -1) {// -1 is the color picker
                 let c = Editor.state.get("colorpicker.color")
                 this.addColor(c.hue, c.sat, c.val)
-                this.selectionID = this.indexOfColor(c.hue, c.sat, c.val)
+                this.selection = this.indexOfColor(c.hue, c.sat, c.val)
             }
-            else this.selectionID = -1
+            else this.selection = -1
         }
 
-
-        {(({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))(Editor.state.get("colorpicker.color"))}
-
         this.mode = "normal"
+
+        Editor.state.sub("palettemanager.selection.id", (v) => {this.#selection = v; this.onSelectionChanged()})
+        Editor.state.sub("palettemanager.colors", (v) => {this.#colors = v; this.onPaletteChanged()})
+        Editor.state.sub("palettemanager.mode", (v) => {this.#mode = v; this.onModeChanged()})
+
+        Editor.state.sub("colorpicker.color", ({hue, sat, val}) => this.onPickedColorChanged(hue, sat, val))
     }
 
     onPickedColorChanged(hue, sat, val) {
-        if(this.hasColor(hue, sat, val)) this.selectionID = this.indexOfColor(hue, sat, val)
+        if(this.hasColor(hue, sat, val)) this.selection = this.indexOfColor(hue, sat, val)
         else {
             let c = hsv2rgb(hue, sat, val)
             this.$add.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
@@ -100,17 +84,17 @@ class PaletteManagerElement extends HTMLElement {
             this.$add.style.setProperty("--contrast", c)
         }
 
-        if(this.mode === "editing" && this.selectionID !== -1) {
-            if(this.hasColor(hue, sat, val) && this.selectionID !== this.indexOfColor(hue, sat, val)) {
+        if(this.mode === "editing" && this.selection !== -1) {
+            if(this.hasColor(hue, sat, val) && this.selection !== this.indexOfColor(hue, sat, val)) {
                 this.removeColor(hue, sat, val)
-                this.selectionID = -1
+                this.selection = -1
             }
             else {
-                this.setColor(this.selectionID, hue, sat, val)
-                this.selectionID = this.indexOfColor(hue, sat, val)
+                this.setColor(this.selection, hue, sat, val)
+                this.selection = this.indexOfColor(hue, sat, val)
             }
         }
-        else this.selectionID = -1
+        else this.selection = -1
     }
     onPaletteChanged() {
         this.$colors.querySelectorAll(".color").forEach((e) => e.remove())
@@ -139,11 +123,11 @@ class PaletteManagerElement extends HTMLElement {
             $.onmousedown = () => {
                 if(this.mode === "deleting") {
                     this.removeColorByID($.dataset.id)
-                    this.selectionID = -1
+                    this.selection = -1
                     if(this.colors.length === 0) this.mode = "normal"
                 }
                 else if(this.mode === "rearranging") {}
-                else this.selectionID = $.dataset.id
+                else this.selection = $.dataset.id
             }
 
             this.$colors.insertBefore($, this.$add)
@@ -152,10 +136,10 @@ class PaletteManagerElement extends HTMLElement {
     onSelectionChanged() {
         this.$colors.querySelectorAll("div[data-selected=true]").forEach((e) => e.dataset.selected = false)
 
-        if(this.selectionID === -1) this.$add.dataset.selected = true
-        else this.$colors.querySelector(`div[data-id="${this.selectionID}"]`).dataset.selected = true
+        if(this.selection === -1) this.$add.dataset.selected = true
+        else this.$colors.querySelector(`div[data-id="${this.selection}"]`).dataset.selected = true
 
-        this.selectionColor = this.getColor(this.selectionID)
+        this.selectionColor = this.getColor(this.selection)
     }
     onModeChanged() {
         if(this.$section) {

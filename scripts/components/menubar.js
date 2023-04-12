@@ -124,7 +124,7 @@ class Menubar {
 
                 this.close(section)
                 this.browsing = false
-                listeners.map((l) => l())
+                listeners.map((f)=>f())
             }
             $.appendChild(window.iconClass2Icon(icon, window.getComputedStyle($).getPropertyValue("--text-1")))
             $.appendChild(Object.assign(document.createElement("span"), {innerText: name}))

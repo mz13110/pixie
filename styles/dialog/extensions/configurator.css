@@ -9,12 +9,13 @@
 
     width: 100%;
     padding-left: 16px;
+    margin-bottom: 16px;
 }
 .configurator-header {
     width: 100%;
     font-size: 17px;
     font-weight: 600;
-    margin-bottom: 2px;
+    margin-bottom: 6px;
     user-select: none;
 }
 .configurator-name {
@@ -44,4 +45,9 @@
 .configurator-field[data-type="number"]>input[type="number"] {
     width: 96px;
     height: 32px;
+}
+
+/* bool */
+.configurator-field[data-type="bool"]>input[type="checkbox"] {
+    margin-top: 1px;
 }

@@ -107,3 +107,6 @@ window.crc32 = (data) => {
 window.uint32ToUint8ArrayBE = (n) => [(n & 0xff000000) >>> 24, (n & 0xff0000) >>> 16, (n & 0xff00) >>> 8, (n & 0xff)]
 window.int32ToInt8ArrayBE = uint32ToUint8ArrayBE
 window.int32ToUint8ArrayBE = uint32ToUint8ArrayBE
+
+window.None = Symbol("None")
+window.nc = (a, b) => a ?? (a === None ? b : a)

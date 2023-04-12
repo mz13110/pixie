@@ -8,6 +8,7 @@ https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js
 /scripts/const.js
 /scripts/lib/util.js
 /scripts/lib/image.js
+/scripts/lib/bus.js
 /scripts/lib/state.js
 /scripts/lib/shadow.js
 
@@ -30,6 +31,7 @@ https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js
 
 /scripts/components/slider.js
 /scripts/components/canvas.js
+/scripts/components/viewport.js
 /scripts/components/colorpicker.js
 /scripts/components/palettemanager.js
 /scripts/components/toolbox.js

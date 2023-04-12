@@ -1,9 +1,11 @@
+Editor.state.setDefault("colorpicker.color", {hue: 0, sat: 100, val: 100})
+
 class ColorPickerElement extends HTMLElement {
     #hue = 0
     #sat = 100
     #val = 100
 
-    set hue(v) {Editor.state.set("colorpicker.color.hue", v)}
+    set hue(v) {Editor.state.set("colorpicker.color.hue", v);}
     get hue() {return this.#hue}
     set sat(v) {Editor.state.set("colorpicker.color.sat", v)}
     get sat() {return this.#sat}
@@ -12,10 +14,6 @@ class ColorPickerElement extends HTMLElement {
 
     constructor() {
         super()
-
-        Editor.state.sub("colorpicker.color.hue", (v) => {this.#hue = v; this.onChanged()})
-        Editor.state.sub("colorpicker.color.sat", (v) => {this.#sat = v; this.onChanged()})
-        Editor.state.sub("colorpicker.color.val", (v) => {this.#val = v; this.onChanged()})
 
         this.attachShadow({
             mode: "open"
@@ -123,7 +121,7 @@ class ColorPickerElement extends HTMLElement {
             this.changingWheelSatV = true
             this.updateSatV(e.pageX, e.pageY, true)
         }
-
+        
         fixInputClamping(this.$inputHue)
         fixInputClamping(this.$inputSat)
         fixInputClamping(this.$inputVal)
@@ -131,9 +129,9 @@ class ColorPickerElement extends HTMLElement {
         linkInputToSlider(this.$sliderSat, this.$inputSat)
         linkInputToSlider(this.$sliderVal, this.$inputVal)
 
-        this.$sliderHue.oninput = () => {this.hue = this.$sliderHue.value; this.redraw()}
-        this.$sliderSat.oninput = () => {this.sat = this.$sliderSat.value; this.redraw()}
-        this.$sliderVal.oninput = () => {this.val = this.$sliderVal.value; this.redraw()}
+        this.$sliderHue.oninput = () => {this.hue = parseInt(this.$sliderHue.value); this.redraw()}
+        this.$sliderSat.oninput = () => {this.sat = parseInt(this.$sliderSat.value); this.redraw()}
+        this.$sliderVal.oninput = () => {this.val = parseInt(this.$sliderVal.value); this.redraw()}
 
         this.$hex.onchange = () => {
             let hex = this.$hex.value.trim()
@@ -154,10 +152,9 @@ class ColorPickerElement extends HTMLElement {
             this.redrawHex()
         }
 
-        this.hue = 0
-        this.sat = 100
-        this.val = 100
-        this.redraw()
+        Editor.state.sub("colorpicker.color.hue", (v) => {this.#hue = v; this.onChanged()})
+        Editor.state.sub("colorpicker.color.sat", (v) => {this.#sat = v; this.onChanged()})
+        Editor.state.sub("colorpicker.color.val", (v) => {this.#val = v; this.onChanged()})
     }
 
     // note: coordinates are relative to page
