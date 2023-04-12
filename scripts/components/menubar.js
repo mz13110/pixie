@@ -7,11 +7,7 @@ class MenubarElement extends HTMLElement {
             this.canonical = true
             this.attachShadow({mode: "open"})
             this.$sr.innerHTML = `<div class="container"></div>`
-            getCSS("base").then((css)=>{
-                this.$sr.appendChild(css)
-                Menubar.reloadStyles()
-                
-            })
+            getCSS("base").then((css)=>this.$sr.appendChild(css))
             getCSS("components/menubar").then((css)=>this.$sr.appendChild(css))
 
             $menubarfr = this
@@ -21,8 +17,6 @@ class MenubarElement extends HTMLElement {
 
     connectedCallback() {
         if(!this.canonical)  this.replaceWith($menubarfr)
-
-        Menubar.reloadStyles()
     }
 
     get $sr() {
@@ -126,7 +120,7 @@ class Menubar {
                 this.browsing = false
                 listeners.map((f)=>f())
             }
-            $.appendChild(window.iconClass2Icon(icon, window.getComputedStyle($).getPropertyValue("--text-1")))
+            $.appendChild($icon(icon))
             $.appendChild(Object.assign(document.createElement("span"), {innerText: name}))
             this.sections[section].$c.appendChild($)
 
@@ -172,13 +166,6 @@ class Menubar {
     static disableItem(id) {
         let $ = this.items[id].$
         $.dataset.disabled = true
-        $.querySelector("box-icon").setAttribute("color", window.getComputedStyle($).getPropertyValue("--text-disabled"))
-    }
-
-    static reloadStyles() {
-        for(let {$, disabled} of Object.values(this.items)) {
-            $.querySelector("box-icon").setAttribute("color", window.getComputedStyle($).getPropertyValue(disabled ? "--text-disabled" : "--text-1"))
-        }
     }
 }
 

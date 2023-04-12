@@ -9,7 +9,7 @@ class MainModal extends Modal {
                 <div class="lmenu sidebar">
                     <div class="section">
                         <div class="section-header">
-                            <span class="section-header-icon bx bxs-color"></span>
+                            ${icon("bxs-color", "section-header-icon")}
                             <span class="section-header-title">Color Picker</span>
                             <div class="section-header-line"></div>
                             <div class="section-header-buttons"></div>
@@ -18,7 +18,7 @@ class MainModal extends Modal {
                     </div>
                     <div class="section">
                         <div class="section-header">
-                            <span class="section-header-icon bx bxs-palette"></span>
+                            ${icon("bxs-palette", "section-header-icon")}
                             <span class="section-header-title">Palette Manager</span>
                             <div class="section-header-line"></div>
                             <div class="section-header-buttons"></div>
@@ -34,7 +34,7 @@ class MainModal extends Modal {
                 <div class="rmenu sidebar">
                     <div class="section">
                         <div class="section-header">
-                            <span class="section-header-icon bx bxs-briefcase"></span>
+                            ${icon("bxs-briefcase", "section-header-icon")}
                             <span class="section-header-title">Toolbox</span>
                             <div class="section-header-line"></div>
                             <div class="section-header-buttons"></div>
@@ -43,7 +43,7 @@ class MainModal extends Modal {
                     </div>
                     <div class="section">
                         <div class="section-header">
-                            <span class="section-header-icon bx bxs-wrench"></span>
+                            ${icon("bxs-wrench", "section-header-icon")}
                             <span class="section-header-title">Tool Info</span>
                             <div class="section-header-line"></div>
                             <div class="section-header-buttons"></div>

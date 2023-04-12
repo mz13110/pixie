@@ -82,6 +82,7 @@ px-viewport {
 }
 .section-header .bx {
     user-select: none;
+    font-size: 16px;
 }
 .section-header-line {
     height: 2px;

@@ -38,7 +38,7 @@ class PaletteManagerElement extends HTMLElement {
         <div class="container">
             <div class="colors">
                 <div class="add" data-id="-1">
-                    <box-icon name="plus"></box-icon>
+                    ${icon("bx-plus")}
                 </div>
             </div>
         </div>`
@@ -80,7 +80,7 @@ class PaletteManagerElement extends HTMLElement {
             this.$add.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
 
             c = contrastColor(hue, sat, val) === "black" ? "#000000" : "#ffffff"
-            this.$add.querySelector("box-icon").setAttribute("color", c)
+            this.$add.style.color = c
             this.$add.style.setProperty("--contrast", c)
         }
 
@@ -109,25 +109,25 @@ class PaletteManagerElement extends HTMLElement {
             $.dataset.val = c.val
 
             $.innerHTML = `
-            <div class="delete-button"><box-icon name="trash" type="solid"></box-icon></div>
-            <div class="move-button"><box-icon name="move"></box-icon></div>
-            <div class="edit-button"><box-icon name="edit-alt" type="solid"></box-icon></div>`
+            <div class="delete-button">${icon("bxs-trash")}</div>
+            <div class="move-button">${icon("bx-move")}</div>
+            <div class="edit-button">${icon("bxs-edit-alt")}</div>`
 
             c = Object.assign(hsv2rgb(c.hue, c.sat, c.val), c) // make both RGB and HSV available
             $.style.setProperty("--color", `rgb(${c.r}, ${c.g}, ${c.b})`)
 
             c = contrastColor(c.hue, c.sat, c.val) === "black" ? "#000000" : "#ffffff"
-            $.querySelectorAll("box-icon").forEach((e) => e.setAttribute("color", c))
+            $.style.color = c
             $.style.setProperty("--contrast", c)
 
             $.onmousedown = () => {
                 if(this.mode === "deleting") {
-                    this.removeColorByID($.dataset.id)
+                    this.removeColorByID(parseInt($.dataset.id))
                     this.selection = -1
                     if(this.colors.length === 0) this.mode = "normal"
                 }
                 else if(this.mode === "rearranging") {}
-                else this.selection = $.dataset.id
+                else this.selection = parseInt($.dataset.id)
             }
 
             this.$colors.insertBefore($, this.$add)
@@ -145,14 +145,14 @@ class PaletteManagerElement extends HTMLElement {
         if(this.$section) {
             let c = window.getComputedStyle(this.$sectionHeaderButtons).getPropertyValue("--selected");
             this.$sectionHeaderButtons.innerHTML = `
-            <div class="section-header-button palette-manager-header-delete-button">
-                <box-icon name="trash" type="solid" color="${this.mode === "deleting" ? c : "#ffffff"}"></box-icon>
+            <div class="section-header-button palette-manager-header-delete-button" data-selected="${this.mode === "deleting"}">
+                ${icon("bxs-trash")}
             </div>
-            <div class="section-header-button palette-manager-header-move-button">
-                <box-icon name="move" type="regular" color="${this.mode === "rearranging" ? c : "#ffffff"}"></box-icon>
+            <div class="section-header-button palette-manager-header-move-button" data-selected="${this.mode === "rearranging"}">
+                ${icon("bx-move")}
             </div>
-            <div class="section-header-button palette-manager-header-edit-button">
-                <box-icon name="edit-alt" type="solid" color="${this.mode === "editing" ? c : "#ffffff"}"></box-icon>
+            <div class="section-header-button palette-manager-header-edit-button" data-selected="${this.mode === "editing"}">
+                ${icon("bxs-edit-alt")}
             </div>`
             this.$sectionHeaderButtons.querySelector(".palette-manager-header-delete-button").onclick = () => this.mode = this.mode === "deleting" ? "normal" : "deleting"
             this.$sectionHeaderButtons.querySelector(".palette-manager-header-move-button").onclick = () => this.mode = this.mode === "rearranging" ? "normal" : "rearranging"
@@ -181,7 +181,7 @@ class PaletteManagerElement extends HTMLElement {
         this.colors = this.colors.filter((c) => c.hue !== hue && e.sat !== sat && e.val !== val)
     }
     removeColorByID(id) {
-        this.colors = this.colors.filter((_,i) => i === id)
+        this.colors = this.colors.filter((_,i) => i !== id)
     }
     hasColor(hue, sat, val) {
         return this.colors.map((c) => c.hue === hue && c.sat === sat && c.val === val).includes(true)

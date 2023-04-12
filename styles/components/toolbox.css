@@ -15,7 +15,8 @@
 .tool[data-selected="true"] {
     background-color: var(--bg-2) !important;
 }
-.tool>box-icon {
+.tool>.bx {
     width: 100%;
     height: 100%;
+    font-size: 25px;
 }

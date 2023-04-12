@@ -29,7 +29,7 @@ class ToolboxElement extends HTMLElement {
         let $ = document.createElement("div")
         $.classList.add("button", "tool")
         $.dataset.id = tool.id
-        $.appendChild(iconClass2Icon(tool.icon, "#ffffff"))
+        $.appendChild($icon(tool.icon))
         $.onclick = () => {
             this.selection = $.dataset.id
         }

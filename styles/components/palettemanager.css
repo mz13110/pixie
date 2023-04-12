@@ -30,11 +30,13 @@
 .colors[data-mode="editing"] .add {
     display: none;
 }
-.color > box-icon, .add > box-icon, .color > div > box-icon {
+.color > .bx, .add > .bx, .color > div > .bx {
     position: absolute;
 
     width: 100%;
     height: 100%;
+
+    font-size: 31px;
 }
 
 .color > div {
@@ -43,8 +45,9 @@
     width: 100%;
     height: 100%;
 }
-.color > div > box-icon {
+.color > div > .bx {
     padding: 4px;
+    font-size: 23px;
 }
 .colors[data-mode="deleting"] .color>.delete-button {
     display: block;

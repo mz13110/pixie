@@ -50,7 +50,7 @@
     color: var(--text-disabled);
     cursor: default;
 }
-.item>box-icon {
+.item>.bx {
     width: 18px;
     height: 18px;
     margin-right: 8px;

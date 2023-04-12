@@ -10,13 +10,13 @@ class ViewportElement extends HTMLElement {
                     <div class="zoom">
                     </div>
                     <div class="reset">
-                        <box-icon name="reset" color="#ffffff"></box-icon>
+                        ${icon("reset")}
                     </div>
                     <div class="zoom-in">
-                        <box-icon name="zoom-in" color="#ffffff"></box-icon>
+                        ${icon("zoom-in")}
                     </div>
                     <div class="zoom-out">
-                        <box-icon name="zoom-out" color="#ffffff"></box-icon>
+                        ${icon("zoom-out")}
                     </div>
                 </div>
                 <div class="main">

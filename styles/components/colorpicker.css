@@ -135,7 +135,7 @@
     border: none !important;
     background-color: transparent;
 }
-.eyedropper>box-icon {
+.eyedropper>.bx {
     width: 31px;
     height: 31px;
     position: absolute;

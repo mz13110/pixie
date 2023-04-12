@@ -43,7 +43,7 @@ class ColorPickerElement extends HTMLElement {
                     <input type="text" class="hex" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" value="#ff0000"></input>
                     <!--
                     <div class="button eyedropper">
-                        <box-icon type="solid" name="eyedropper"></box-icon>
+                        ${icon("bxs-eyedropper")}
                     </div>
                     -->
                 </div>
@@ -291,7 +291,7 @@ class ColorPickerElement extends HTMLElement {
 
         this.$hex.style.backgroundColor = `rgb(${c.r}, ${c.g}, ${c.b})`
         this.$hexContainer.style.setProperty("--color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
-        //this.$hexContainer.querySelector(".eyedropper>box-icon").setAttribute("color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
+        //this.$hexContainer.querySelector(".eyedropper>.bx").style.color = contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff"
 
         this.$hex.value = rgb2hex(c.r, c.g, c.b)
     }

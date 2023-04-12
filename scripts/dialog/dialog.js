@@ -30,7 +30,7 @@ class Dialog extends Modal {
         this.$dialog.innerHTML = `
             <div class="header">
                 <div class="title">
-                    <box-icon class="title-icon" color="#ffffff" hidden></box-icon>
+                    ${icon("", "title-icon")}
                     <div class="title-text"></div>
                 </div>
                 <div class="buttons"></div>
@@ -61,7 +61,7 @@ class Dialog extends Modal {
 
             let $ = document.createElement("div")
             $.classList.add("button", "no-base-style")
-            $.appendChild(iconClass2Icon(icon, "#ffffff"))
+            $.appendChild($icon(icon))
             $.onclick = () => listeners.map(function(l){l()})
 
             this.$buttons.appendChild($)
@@ -75,7 +75,7 @@ class Dialog extends Modal {
     onIconChanged() {
         if(this.icon === "") this.$titleIcon.hidden = false
         else this.$titleIcon.hidden = true
-        this.$titleIcon.replaceWith(iconClass2Icon(this.icon, this.$titleIcon.color))
+        this.$titleIcon.replaceWith($icon(this.icon, "title-icon"))
     }
 
     onClose() {return false}
