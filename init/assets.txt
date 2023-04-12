@@ -50,6 +50,7 @@ styles/components/palettemanager.css
 styles/components/slider.css
 styles/components/toolbox.css
 styles/components/toolinfo.css
+styles/components/viewport.css
 styles/dialog/content.css
 styles/dialog/dialog.css
 styles/dialog/extensions/actions.css
