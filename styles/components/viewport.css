@@ -1,6 +1,18 @@
+:host {
+    --width: 32;
+    --height: 64;
+
+    --css-px-per-cv-px: 20;
+    --bg-px-per-cv-px: 2;
+
+    --bg-size: calc(var(--css-px-per-cv-px) * var(--bg-px-per-cv-px) * 1px);
+}
+
 .container {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .menu {
@@ -9,7 +21,82 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    
+    background-color: var(--bg-1);
+
+    padding: 2px 8px;
+    gap: 5px;
+}
+.menu .bx {
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
 }
 .menu>* {
+    width: 26px;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.menu>.button {
+    cursor: pointer;
+}
+
+.lock>div {
+    width: 22px;
+    height: 22px;
+}
+.lock .bx {
+    width: 100%;
+    height: 100%;
+}
+.container[data-locked="false"] [data-locked="true"] {
+    display: none;
+}
+.container[data-locked="true"] [data-locked="false"] {
+    display: none;
+}
+
+.zoom {
+    width: 50px;
+}
+.zoom input {
+    appearance: none;
+    width: 100%;
+}
+.zoom input::-webkit-outer-spin-button,
+.zoom input::-webkit-inner-spin-button {
+    display: none;
+}
+
+.main {
+    outline: 2px solid var(--accent-2);
+
+    width: 100%;
+    flex-grow: 1;
+
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+.main pinch-zoom {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+
+    /* put background in pinch-zoom because pinch-zoom has --scale, --x, and --y variables */
+    background: linear-gradient(var(--darken), var(--darken)), url("/images/bg.png");
+    background-repeat: repeat;
+    background-size: calc(var(--bg-size) * var(--scale)) calc(var(--bg-size) * var(--scale));
+    background-position: var(--x) var(--y);
+
+    image-rendering: pixelated;
+}
+.content {
+    width: fit-content;
+    height: fit-content;
+}
+px-canvas {
+    width:  calc(var(--width) * var(--css-px-per-cv-px) * 1px);
+    height: calc(var(--height) * var(--css-px-per-cv-px) * 1px);
 }

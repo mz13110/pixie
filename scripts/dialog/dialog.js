@@ -48,7 +48,7 @@ class Dialog extends Modal {
         this.$buttons = this.$sr.querySelector(".buttons")
 
 
-        this.$container.onclick = (e) => {
+        this.$container.onpointerdown = (e) => {
             if(this.$dialog.contains(e.target)) return
 
             this.close()
@@ -60,7 +60,7 @@ class Dialog extends Modal {
             if(id in buttons) throw `button with id ${id} already exists`
 
             let $ = document.createElement("div")
-            $.classList.add("button", "no-base-style")
+            $.classList.add("button", "no-base-styling")
             $.appendChild($icon(icon))
             $.onclick = () => listeners.map(function(l){l()})
 

@@ -26,14 +26,14 @@ class SliderElement extends HTMLElement {
         })
         this.$sr.innerHTML = `
         <div class="container">
-            <input class="slider no-base-style" type="range">
+            <input class="slider no-base-styling" type="range">
             <div class="slider-bg">
                 <div></div>
             </div>
 
             <div class="text">
                 <div class="label"></div>
-                <input type="number" class="number no-base-style">
+                <input type="number" class="number no-base-styling">
             </div>
         </div>
         `

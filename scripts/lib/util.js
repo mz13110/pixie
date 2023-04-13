@@ -110,3 +110,7 @@ window.int32ToUint8ArrayBE = uint32ToUint8ArrayBE
 
 window.None = Symbol("None")
 window.nc = (a, b) => a ?? (a === None ? b : a)
+
+window.cloneEvent = (e) => {
+    return new e.constructor(e.type, e)
+}

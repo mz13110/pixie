@@ -1,6 +1,7 @@
 https://cdn.jsdelivr.net/npm/@popperjs/core@2/dist/umd/popper.min.js
 https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js
 /third_party/buffer.pngjs.js
+/third_party/pinch-zoom.js
 
 /scripts/polyfill/shadow.js
 

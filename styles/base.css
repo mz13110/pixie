@@ -1,4 +1,5 @@
 @import url("/third_party/normalize.css");
+@import url("/third_party/pinch-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/boxicons@2/css/boxicons.min.css");
 @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap");
 
@@ -7,7 +8,7 @@
     --bg-1: #252525;
     --bg-2: #2a2a2a;
     --bg-3: #3b3b3b;
-    --bg-darken: #19191999;
+    --darken: #19191999;
 
     --text-1: #ffffff;
     --text-2: #000000;
@@ -35,18 +36,18 @@
 
 }
 
-input[type="date"]:not(.no-base-style),
-input[type="datetime-local"]:not(.no-base-style),
-input[type="email"]:not(.no-base-style),
-input[type="month"]:not(.no-base-style),
-input[type="number"]:not(.no-base-style),
-input[type="password"]:not(.no-base-style),
-input[type="search"]:not(.no-base-style),
-input[type="tel"]:not(.no-base-style),
-input[type="text"]:not(.no-base-style),
-input[type="time"]:not(.no-base-style),
-input[type="url"]:not(.no-base-style),
-input[type="week"]:not(.no-base-style) {
+input[type="date"]:not(.no-base-styling),
+input[type="datetime-local"]:not(.no-base-styling),
+input[type="email"]:not(.no-base-styling),
+input[type="month"]:not(.no-base-styling),
+input[type="number"]:not(.no-base-styling),
+input[type="password"]:not(.no-base-styling),
+input[type="search"]:not(.no-base-styling),
+input[type="tel"]:not(.no-base-styling),
+input[type="text"]:not(.no-base-styling),
+input[type="time"]:not(.no-base-styling),
+input[type="url"]:not(.no-base-styling),
+input[type="week"]:not(.no-base-styling) {
     appearance: none;
     background-color: var(--bg-3);
     border: 1px solid var(--accent-2);
@@ -54,7 +55,7 @@ input[type="week"]:not(.no-base-style) {
     color: var(--text-1);
     border-radius: 5px;
 }
-.button:not(.no-base-style) {
+.button:not(.no-base-styling) {
     appearance: none;
     background-color: var(--bg-3);
     border: 1px solid var(--accent-2);
@@ -64,28 +65,28 @@ input[type="week"]:not(.no-base-style) {
 
     cursor: pointer;
 }
-.button[data-active="true"]:not(.no-base-style) {
+.button[data-active="true"]:not(.no-base-styling) {
     background-color: var(--bg-2);
 }
 
-input[type="date"]:focus:not(.no-base-style),
-input[type="datetime-local"]:focus:not(.no-base-style),
-input[type="email"]:focus:not(.no-base-style),
-input[type="month"]:focus:not(.no-base-style),
-input[type="number"]:focus:not(.no-base-style),
-input[type="password"]:focus:not(.no-base-style),
-input[type="search"]:focus:not(.no-base-style),
-input[type="tel"]:focus:not(.no-base-style),
-input[type="text"]:focus:not(.no-base-style),
-input[type="time"]:focus:not(.no-base-style),
-input[type="url"]:focus:not(.no-base-style),
-input[type="week"]:focus:not(.no-base-style),
-input[type="checkbox"]:focus:not(.no-base-style) {
+input[type="date"]:focus:not(.no-base-styling),
+input[type="datetime-local"]:focus:not(.no-base-styling),
+input[type="email"]:focus:not(.no-base-styling),
+input[type="month"]:focus:not(.no-base-styling),
+input[type="number"]:focus:not(.no-base-styling),
+input[type="password"]:focus:not(.no-base-styling),
+input[type="search"]:focus:not(.no-base-styling),
+input[type="tel"]:focus:not(.no-base-styling),
+input[type="text"]:focus:not(.no-base-styling),
+input[type="time"]:focus:not(.no-base-styling),
+input[type="url"]:focus:not(.no-base-styling),
+input[type="week"]:focus:not(.no-base-styling),
+input[type="checkbox"]:focus:not(.no-base-styling) {
     border: 1px solid var(--selected);
     outline: none;
 }
 
-input[type="range"]:not(.no-base-style) {
+input[type="range"]:not(.no-base-styling) {
     appearance: none;
     border: 1px solid var(--accent-2);
     background-color: var(--bg-3);
@@ -93,10 +94,10 @@ input[type="range"]:not(.no-base-style) {
     height: 10px;
     margin: 10px 0px;
 }
-input[type="range"]:not(.no-base-style)::-webkit-slider-runnable-track {
+input[type="range"]:not(.no-base-styling)::-webkit-slider-runnable-track {
     z-index: 0;
 }
-input[type="range"]:not(.no-base-style)::-webkit-slider-thumb {
+input[type="range"]:not(.no-base-styling)::-webkit-slider-thumb {
     appearance: none;
     border: 1px solid var(--accent-2);
     background-color: var(--bg-2);
@@ -106,11 +107,11 @@ input[type="range"]:not(.no-base-style)::-webkit-slider-thumb {
     z-index: 1;
 }
 
-input[type="number"]:not(.no-base-style)::-webkit-inner-spin-button {
+input[type="number"]:not(.no-base-styling)::-webkit-inner-spin-button {
     opacity: 1; /* force spin buttons to always appear */
 }
 
-input[type="checkbox"]:not(.no-base-style) {
+input[type="checkbox"]:not(.no-base-styling) {
     appearance: none;
     background-color: var(--bg-3);
     border: 1px solid var(--accent-2);
@@ -120,10 +121,10 @@ input[type="checkbox"]:not(.no-base-style) {
     width: 16px;
     height: 16px;
 }
-input[type="checkbox"]:not(.no-base-style):checked {
+input[type="checkbox"]:not(.no-base-styling):checked {
     background-color: var(--bg-1);
 }
-input[type="checkbox"]:not(.no-base-style):checked::after {
+input[type="checkbox"]:not(.no-base-styling):checked::after {
     content: "";
     clip-path: polygon(50% 35.859%, 28.789% 14.648%, 14.648% 28.789%, 35.859% 50%, 14.648% 71.211%, 28.789% 85.352%, 50% 64.141%, 71.211% 85.352%, 85.352% 71.211%, 64.141% 50%, 85.252% 28.789%, 71.111% 14.648%);
     background-color: #ffffff;

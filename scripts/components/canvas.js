@@ -35,7 +35,7 @@ class CanvasElement extends HTMLElement {
 
         let mouse = (e) => {
             return (ev) => {
-                if (this.tool) {
+                if(this.tool) {
                     let { x, y } = this.offsetToXY(ev.offsetX, ev.offsetY)
                     this.tool[e](this, x, y)
                 }
@@ -44,7 +44,7 @@ class CanvasElement extends HTMLElement {
         let lastTouch = { x: 0, y: 0 }
         let touch = (e) => {
             return (ev) => {
-                if (this.tool) {
+                if(this.tool) {
                     ev.preventDefault()
                     for (let touch of ev.touches) {
                         let { x: ox, y: oy } = this.clientToOffset(touch.clientX, touch.clientY)
@@ -55,16 +55,16 @@ class CanvasElement extends HTMLElement {
                 }
             }
         }
-        this.$canvas.onmousedown = mouse("onDown")
-        this.$canvas.onmousemove = mouse("onMove")
-        this.$canvas.onmouseup = mouse("onUp")
-        this.$canvas.onmouseleave = mouse("onUp")
+        this.onmousedown = mouse("onDown")
+        this.onmousemove = mouse("onMove")
+        this.onmouseup = mouse("onUp")
+        this.onmouseleave = mouse("onUp")
 
-        this.$canvas.ontouchstart = touch("onDown")
-        this.$canvas.ontouchmove = touch("onMove")
-        this.$canvas.ontouchend = () => { if (this.tool) this.tool.onUp(this, lastTouch.x, lastTouch.y) }
+        this.ontouchstart = touch("onDown")
+        this.ontouchmove = touch("onMove")
+        this.ontouchend = () => { if (this.tool) this.tool.onUp(this, lastTouch.x, lastTouch.y) }
 
-        this.$canvas.oncontextmenu = () => false // disable right click context menu
+        this.oncontextmenu = () => false // disable right click context menu
 
         Editor.state.sub("canvas.size", (v) => { this.#width = v.width; this.#height = v.height; this.onResized() })
         Editor.state.sub("palettemanager.selection.color", (v) => { this.#selectedColor = hsv2hex(v.hue, v.sat, v.val) })
@@ -98,22 +98,22 @@ class CanvasElement extends HTMLElement {
     }
 
     clientToOffset(x, y) {
-        let rect = this.$canvas.getBoundingClientRect()
         return {
-            x: x - rect.left,
-            y: y - rect.top
+            x: x - this.$canvas.offsetLeft,
+            y: y - this.$canvas.offsetTop
         }
     }
     offsetToXY(x, y) {
-        let rect = this.$canvas.getBoundingClientRect()
         return {
-            x: Math.floor((this.width / rect.width) * x),
-            y: Math.floor((this.height / rect.height) * y)
+            x: Math.floor((this.width / this.$canvas.offsetWidth) * x),
+            y: Math.floor((this.height / this.$canvas.offsetHeight) * y)
         }
     }
 
     onResized() {
-        console.log(this.width, this.height)
+        this.style.setProperty("--width", this.width)
+        this.style.setProperty("--height", this.height)
+
         this.$canvas.width = this.width
         this.$canvas.height = this.height
 

@@ -63,4 +63,5 @@ test.html
 third_party/buffer.pngjs.js
 third_party/buffer.pngjs.js.bak
 third_party/normalize.css
-third_party/pinchzoom.min.js
+third_party/pinch-zoom.css
+third_party/pinch-zoom.js
