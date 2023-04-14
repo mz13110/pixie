@@ -1,4 +1,3 @@
-#!/home/codespace/nvm/current/bin/node
-const {readFileSync} = require("fs")
+import { readFileSync } from "fs"
 
 console.log("new Buffer([" + (new Uint8Array(readFileSync(process.argv[2])) + "])"))

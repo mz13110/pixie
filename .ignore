@@ -1,6 +1,4 @@
 .ignore
 .vscode
 .git
-test
-file2array
-gen_assets.mjs
+scripts

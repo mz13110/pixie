@@ -1,3 +1,5 @@
+window.rethrow = (p) => p.catch((e)=>{throw e})
+
 window.distanceTo = (x1, y1, x2, y2) => Math.sqrt((x2-x1)**2+(y2-y1)**2)
 Math.clamp = (num, min, max) => Math.min(Math.max(num, min), max)
 window.hsv2rgb = (hue,sat,val) => {var r,g,b,i,f,p,q,t;hue/=360,sat/=100,val/=100,i=Math.floor(hue*6);f=hue*6-i;p=val*(1-sat);q=val*(1-f*sat);t=val*(1-(1-f)*sat);switch(i%6){case 0:r=val,g=t,b=p;break;case 1:r=q,g=val,b=p;break;case 2:r=p,g=val,b=t;break;case 3:r=p,g=q,b=val;break;case 4:r=t,g=p,b=val;break;case 5:r=val,g=p,b=q;break}return{r:Math.clamp(Math.round(r*255),0,255),g:Math.clamp(Math.round(g*255),0,255),b:Math.clamp(Math.round(b*255),0,255)}}

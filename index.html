@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <script src="/scripts/lib/cache.js"></script>
+        <script src="/js/lib/cache.js"></script>
 
         <link rel="icon" href="/logo/favicon.ico">
     </head>
@@ -83,7 +83,7 @@
 
                     @media (prefers-color-scheme: dark) {
                         .ld-loader {
-                            --ca: #bbbbbb;
+                            --ca: #dddddd;
                             --cb: #252525;
                         }
                         .ld-spinner {
@@ -227,11 +227,11 @@
                     }),
 
                     // fetch assets
-                    async () => await Promise.all(assets.map((a) => cachedFetch(a).then(()=>{c++;u()}))),
+                    async () => await Promise.all(assets.map((a) => cachedFetch(a).then(()=>{c++;u()}).catch((e)=>{throw e}))),
 
                     // load scripts
                     async () => {
-                        let scripts = (await cachedFetch("/init/scripts.txt")).text.split("\n")
+                        let scripts = (await cachedFetch("/init/js.txt")).text.split("\n")
                         for(let script of scripts) {
                             if(script === "") continue
                             let $ = document.createElement("script")
@@ -249,8 +249,9 @@
                 {(async()=>{
                     for(let task of tasks) {
                         await task().catch((e) => {
-                            alert("an error occurred while loading, please refresh the page")
+                            alert("an error occurred while loading; the page will now reload")
                             alert(e)
+                            window.location.reload()
                             stop = true
                         })
                         if(stop) break
@@ -259,9 +260,9 @@
                     }
                 })().then(() => {
                     if(stop) return
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         $.dataset.fadeout = true
-                        setTimeout(() => {
+                        setTimeout(async () => {
                             $.style.display = "none";
                             resolve()
                         }, FADEOUT_TIME)

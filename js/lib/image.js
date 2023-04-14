@@ -43,23 +43,23 @@ class PNGImage {
                 else if(type === PNG_EDITOR_DATA_CHUNK_TYPE) {
                     let keyword
                     let keywordLength = data.readUInt8()
-                    if(typeof keywordLength !== "number" || keywordLength < 1) throw "invalid pxJS keyword length"
+                    if(typeof keywordLength !== "number" || keywordLength < 1) throw `invalid ${PNG_EDITOR_DATA_CHUNK_TYPE} keyword length`
                     try {
                         keyword = new TextDecoder("", {fatal: true}).decode(data.slice(1, keywordLength + 1)).toLowerCase()
                     }
                     catch(e) {
-                        throw "unable to decode pxJS keyword"
+                        throw `unable to decode ${PNG_EDITOR_DATA_CHUNK_TYPE} keyword`
                     }
 
-                    if(keyword in info) throw `pxJS with keyword ${keyword} already declared`
-                    if(keyword.startsWith("__") && keyword.endsWith("__")) throw `keywords starting and ending with "__" cannot be used in pxJS for security reasons, got keyword ${keyword}`
+                    if(keyword in info) throw `${PNG_EDITOR_DATA_CHUNK_TYPE} with keyword ${keyword} already declared`
+                    if(keyword.startsWith("__") && keyword.endsWith("__")) throw `keywords starting and ending with "__" cannot be used in ${PNG_EDITOR_DATA_CHUNK_TYPE} for security reasons, got keyword ${keyword}`
 
                     let data
                     try {
                         data = JSON.parse(new TextDecoder("", {fatal: true}).decode(data.slice(1 + keywordLength)))
                     }
                     catch(e) {
-                        throw "unable to decode pxJS data as JSON"
+                        throw  `unable to decode ${PNG_EDITOR_DATA_CHUNK_TYPE} data as JSON`
                     }
                 }
             }
@@ -73,7 +73,50 @@ class PNGImage {
     }
 
     static injectInfo(raw, info) {
-        
+        let infoChunks = []
+        for(let [k, d] of Object.entries(info)) {
+            d = JSON.stringify(d)
+            let ic = Buffer.alloc(4 + k.length + d.length)
+            
+        }
+        let out = Buffer.alloc(raw.length)
+        for(let byte of PNG_SIGNATURE) {
+            if(raw.readUInt8(o) !== byte) throw "bad png signature"
+            o += 1
+        }
+        while(true) {
+            let length = raw.readUInt32BE(o); o += 4
+            let realCRC = crc32(raw.slice(o, o + length + 4))
+            let type = new Array(4).fill().reduce((a) => a + String.fromCharCode(raw.readUInt8(o++)), "")
+            let data = raw.slice(o + 1, (o += length) + 1)
+
+            let crc = raw.readUInt32BE(o); o += 4
+            if(crc !== realCRC) throw "bad checksum"
+
+            if(type === "IEND") break
+            else if(type === PNG_EDITOR_DATA_CHUNK_TYPE) {
+                let keyword
+                let keywordLength = data.readUInt8()
+                if(typeof keywordLength !== "number" || keywordLength < 1) throw `invalid ${PNG_EDITOR_DATA_CHUNK_TYPE} keyword length`
+                try {
+                    keyword = new TextDecoder("", {fatal: true}).decode(data.slice(1, keywordLength + 1)).toLowerCase()
+                }
+                catch(e) {
+                    throw `unable to decode ${PNG_EDITOR_DATA_CHUNK_TYPE} keyword`
+                }
+
+                if(keyword in info) throw `${PNG_EDITOR_DATA_CHUNK_TYPE} with keyword ${keyword} already declared`
+                if(keyword.startsWith("__") && keyword.endsWith("__")) throw `keywords starting and ending with "__" cannot be used in ${PNG_EDITOR_DATA_CHUNK_TYPE} for security reasons, got keyword ${keyword}`
+
+                let data
+                try {
+                    data = JSON.parse(new TextDecoder("", {fatal: true}).decode(data.slice(1 + keywordLength)))
+                }
+                catch(e) {
+                    throw  `unable to decode ${PNG_EDITOR_DATA_CHUNK_TYPE} data as JSON`
+                }
+            }
+        }
     }
 }
 

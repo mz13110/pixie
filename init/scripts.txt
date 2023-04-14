@@ -3,42 +3,42 @@ https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js
 /third_party/buffer.pngjs.js
 /third_party/pinch-zoom.js
 
-/scripts/polyfill/shadow.js
+/js/polyfill/shadow.js
 
-/scripts/const.js
-/scripts/lib/util.js
-/scripts/lib/image.js
-/scripts/lib/bus.js
-/scripts/lib/state.js
-/scripts/lib/shadow.js
+/js/const.js
+/js/lib/util.js
+/js/lib/image.js
+/js/lib/bus.js
+/js/lib/state.js
+/js/lib/shadow.js
 
-/scripts/editor.js
-/scripts/ui.js
+/js/editor.js
+/js/ui.js
 
-/scripts/modal/modal.js
-/scripts/dialog/dialog.js
-/scripts/dialog/extensions/closebutton.js
-/scripts/dialog/extensions/actions.js
-/scripts/dialog/extensions/configurator.js
+/js/modal/modal.js
+/js/dialog/dialog.js
+/js/dialog/extensions/closebutton.js
+/js/dialog/extensions/actions.js
+/js/dialog/extensions/configurator.js
 
-/scripts/components/menubar.js
+/js/components/menubar.js
 
-/scripts/tool/tool.js
-/scripts/tool/tools.js
+/js/tool/tool.js
+/js/tool/tools.js
 
-/scripts/file.js
-/scripts/edit.js
+/js/file.js
+/js/edit.js
 
-/scripts/components/slider.js
-/scripts/components/canvas.js
-/scripts/components/viewport.js
-/scripts/components/colorpicker.js
-/scripts/components/palettemanager.js
-/scripts/components/toolbox.js
-/scripts/components/toolinfo.js
+/js/components/slider.js
+/js/components/canvas.js
+/js/components/viewport.js
+/js/components/colorpicker.js
+/js/components/palettemanager.js
+/js/components/toolbox.js
+/js/components/toolinfo.js
 
-/scripts/modals/main.js
+/js/modals/main.js
 
-/scripts/dialogs/newfile.js
+/js/dialogs/newfile.js
 
-/scripts/index.js
+/js/index.js

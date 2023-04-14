@@ -1,5 +1,10 @@
+const MAX_FETCH_RETRIES = 3
+
 window.cache = {}
 window.pendingFetches = {}
+
+
+const rethrow = (p) => p.catch((e)=>{throw e})
 
 window.cachedFetch = async (path, basePath) => {
     basePath = basePath ?? document.baseURI
@@ -11,7 +16,25 @@ window.cachedFetch = async (path, basePath) => {
     else {
         // dont create a new fetch if a previous one is pending
         if(!(path in window.pendingFetches)) window.pendingFetches[path] = new Promise(async (resolve, reject) => {
-            let res = await fetch(path)
+            let res
+
+            let i = 0
+            while(res === undefined && i < MAX_FETCH_RETRIES) {
+                if(i !== 0) console.log(`refetching ${path} (#${i + 1})`)
+                res = await new Promise((resolve, reject) => 
+                    fetch(path)
+                        .then((res) => resolve(res))
+                        .catch((e) => {
+                            console.error(`failed to fetch ${path}`, e)
+                            resolve(undefined)
+                        })
+                )
+                if(!res.ok) res = undefined
+                i++
+            }
+
+            if(res === undefined) return reject(`Failed to fetch ${path}`)
+
             let blob = await res.blob()
             let isCSS = blob.type === "text/css"
             let isText = isCSS || blob.type.startsWith("text/") || blob.type === "application/javascript" || blob.type === "application/json"
@@ -25,7 +48,7 @@ window.cachedFetch = async (path, basePath) => {
             resolve(isText ? {isText, isCSS, text: text, blob, url: URL.createObjectURL(blob)} : {isText, isCSS, blob, url: URL.createObjectURL(blob)})
             delete window.pendingFetches[path]
         })
-        css = await window.pendingFetches[path]
+        css = await rethrow(window.pendingFetches[path])
         window.cache[path] = css
     }
     return css
@@ -63,7 +86,7 @@ window.getJS = async (path, module, isShorthand, basePath) => {
     module = module ?? false
 
     let $ = document.createElement("script")
-    $.innerHTML = (await cachedFetch(((isShorthand??true) ? `/scriptss/${path}.js` : path), basePath)).text
+    $.innerHTML = (await cachedFetch(((isShorthand??true) ? `/jss/${path}.js` : path), basePath)).text
     $.module = module
     return $
 }

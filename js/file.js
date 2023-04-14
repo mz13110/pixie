@@ -36,12 +36,13 @@ class File {
         })))
     }
 
-    static save() {
-        
-    }
 
     static export() {
 
+    }
+
+    static save() {
+        
     }
 }
 Editor.bus.def("file.new", (ev) => File.new(ev.data.size, ev.data.keep))

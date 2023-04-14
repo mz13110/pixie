@@ -1,6 +1,5 @@
-#!/home/codespace/nvm/current/bin/node
-const { existsSync, readFileSync, writeFileSync, readdirSync, statSync } = require("fs")
-const { join } = require("path")
+import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from "fs"
+import { join } from "path"
 
 let files = []
 async function scan(p) {
