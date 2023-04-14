@@ -231,10 +231,11 @@
 
                     // load scripts
                     async () => {
-                        let scripts = (await cachedFetch("/init/js.txt")).text.split("\n")
+                        let scripts = (await cachedFetch("/init/scripts.txt")).text.split("\n")
                         for(let script of scripts) {
                             if(script === "") continue
                             let $ = document.createElement("script")
+                            console.log(script, (await cachedFetch(script)).text)
                             $.innerHTML = (await cachedFetch(script)).text
                             document.body.appendChild($)
                         }

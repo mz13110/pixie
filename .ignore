@@ -1,4 +1,5 @@
 .ignore
+.gitignore
 .vscode
 .git
 scripts

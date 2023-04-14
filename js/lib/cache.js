@@ -79,7 +79,7 @@ window.cacheCSSURLs = async (css, basePath) => {
 }
 window.getCSS = async (path, isShorthand, basePath) => {
     let $ = document.createElement("style")
-    $.innerHTML = (await cachedFetch(((isShorthand??true) ? `/styles/${path}.css` : path), basePath)).text
+    $.innerHTML = (await cachedFetch(((isShorthand??true) ? `/css/${path}.css` : path), basePath)).text
     return $
 }
 window.getJS = async (path, module, isShorthand, basePath) => {
