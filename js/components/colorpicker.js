@@ -110,14 +110,14 @@ class ColorPickerElement extends HTMLElement {
         this.satVCtx = this.$wheelSatVCanvas.getContext("2d")
 
 
-        window.onmousemove = (e) => {
+        window.onmousemove = async (e) => {
             if(this.changingWheelHue) this.updateHue(e.pageX, e.pageY)
             else if(this.changingWheelSatV) this.updateSatV(e.pageX, e.pageY)
         }
-        window.onmouseup = (e) => {this.changingWheelHue = false; this.changingWheelSatV = false}
-        window.onmouseleave = (e) => {this.changingWheelHue = false; this.changingWheelSatV = false}
-        this.$wheelContainer.onmousedown = (e) => this.updateHue(e.pageX, e.pageY)
-        this.$wheelInner.onmousedown = (e) => {
+        window.onmouseup = async (e) => {this.changingWheelHue = false; this.changingWheelSatV = false}
+        window.onmouseleave = async (e) => {this.changingWheelHue = false; this.changingWheelSatV = false}
+        this.$wheelContainer.onmousedown = async (e) => this.updateHue(e.pageX, e.pageY)
+        this.$wheelInner.onmousedown = async (e) => {
             this.changingWheelSatV = true
             this.updateSatV(e.pageX, e.pageY, true)
         }

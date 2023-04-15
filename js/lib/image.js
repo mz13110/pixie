@@ -9,13 +9,23 @@ class PNGImage {
     png = null
     info = {}
 
-    constructor(raw) {
-        if(typeof raw[Symbol.iterator] === "function" || raw instanceof ArrayBuffer || typeof raw === "string") raw = Buffer.from(raw)
-        else if(!Buffer.isBuffer(raw)) throw `unable to convert ${raw} to a buffer object`
-
-        this.info = PNGImage.extractInfo(raw)
-        this.png = PNG.sync.read(raw)
-        PNG.adjustGamma(this.png)
+    constructor(rawOrWidth, height) {
+        if(height !== undefined) {
+            this.info = {}
+            this.png = new PNG({
+                colorType: 6, // color & alpha
+                width: rawOrWidth,
+                height
+            })
+        }
+        else {
+            if(typeof rawOrWidth[Symbol.iterator] === "function" || rawOrWidth instanceof ArrayBuffer || typeof rawOrWidth === "string") rawOrWidth = Buffer.from(rawOrWidth)
+            else if(!Buffer.isBuffer(rawOrWidth)) throw `unable to convert ${rawOrWidth} to a buffer object`
+    
+            this.info = PNGImage.extractInfo(rawOrWidth)
+            this.png = PNG.sync.read(rawOrWidth)
+            PNG.adjustGamma(this.png)
+        }
     }
 
     static extractInfo(raw) {

@@ -6,6 +6,8 @@ https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js
 /js/polyfill/shadow.js
 
 /js/const.js
+/js/lib/error.js
+/js/lib/regex.js
 /js/lib/util.js
 /js/lib/image.js
 /js/lib/bus.js
@@ -40,5 +42,7 @@ https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js
 /js/modals/main.js
 
 /js/dialogs/newfile.js
+/js/dialogs/exportfile.js
+/js/dialogs/savefile.js
 
 /js/index.js

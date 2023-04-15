@@ -9,6 +9,18 @@ window.hsv2hex = (hue,sat,val) => {
     let {r, g, b} = hsv2rgb(hue, sat, val)
     return rgb2hex(r, g, b)
 }
+window.hex2rgba = (c) => ({r: parseInt(c.slice(1, 3), 16), g: parseInt(c.slice(3, 5), 16), b: parseInt(c.slice(5, 7), 16), a: c.length>7 ? parseInt(c.slice(7, 9), 16) : 255})
+window.blendRGBA = (a, b) => {
+    // "borrowed and optimized" (read stolen) from https://stackoverflow.com/a/727339/16427430
+    let ba = (1 - a.a)
+    let c = {r: 0, g: 0, b: 0, a: 1 - (1 - a.a) * ba}
+    if(a < 1.0e-6) return r // use 1.0e-6 instead of 0 to correct for rounding errors
+    let aa = a.a / a
+    ba /= a
+    c.r = a.r * aa + b.r * b.a * ba
+    c.g = a.g * aa + b.g * b.a * ba
+    c.b = a.b * aa + b.b * b.a * ba
+}
 Math.rad2deg = (a) => a*180/Math.PI
 Math.deg2rad = (a) => a*Math.PI/180
 Math.rotate = (x, y, a, ox, oy) => {
@@ -115,4 +127,21 @@ window.nc = (a, b) => a ?? (a === None ? b : a)
 
 window.cloneEvent = (e) => {
     return new e.constructor(e.type, e)
+}
+
+window.download = (data, name, type) => {
+    type = type ?? (data instanceof Blob ? data.type : "text/plain")
+    data = new Blob([data], {type})
+
+    data = URL.createObjectURL(data)
+
+    let $ = document.createElement("a")
+    $.download = name
+    $.href = data
+    $.style.display = "none"
+    document.body.appendChild($)
+    $.click()
+    $.remove()
+
+    URL.revokeObjectURL(data)
 }

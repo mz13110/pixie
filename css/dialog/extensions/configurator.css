@@ -22,8 +22,12 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
     user-select: none;
+    padding-top: 8px;
+}
+.configurator-name span {
+    height: 16px;
 }
 .configurator-item {
 }
@@ -48,6 +52,40 @@
 }
 
 /* bool */
+.configurator-field[data-type="bool"] {
+    height: 32px;
+}
 .configurator-field[data-type="bool"]>input[type="checkbox"] {
     margin-top: 1px;
+}
+
+/* text */
+.configurator-field[data-type="text"][data-variant="s"]>input[type="text"] {
+    width: 96px;
+    height: 32px;
+}
+.configurator-field[data-type="text"][data-variant="m"]>input[type="text"] {
+    width: 128px;
+    height: 32px;
+}
+.configurator-field[data-type="text"][data-variant="l"]>input[type="text"] {
+    width: 169px;
+    height: 32px;
+}
+.configurator-field[data-type="text"][data-variant="area"]>input[type="text"] {
+    width: 256px;
+    height: 169px;
+}
+.configurator-field[data-type="text"]>span {
+    margin-left: 2px;
+    user-select: none;
+}
+.configurator-field[data-type="text"][data-align="left"]>input[type="text"] {
+    text-align: left;
+}
+.configurator-field[data-type="text"][data-align="center"]>input[type="text"] {
+    text-align: center;
+}
+.configurator-field[data-type="text"][data-align="right"]>input[type="text"] {
+    text-align: right;
 }

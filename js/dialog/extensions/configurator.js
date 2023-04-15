@@ -111,7 +111,7 @@ DialogExtensionRegistry.add({
                     case "number": {
                         field = Object.assign({min: 0, max: Infinity, step: 1}, field)
                         field.default = field.default ?? (field.min === -Infinity ? 0 : field.min)
-                        field.listeners = Object.assign({input: []}, field.listeners ?? {})
+                        field.listeners = Object.assign({change: []}, field.listeners ?? {})
 
                         $.dataset.type = "number"
 
@@ -139,7 +139,7 @@ DialogExtensionRegistry.add({
                     }
                     case "bool": {
                         field = Object.assign({default: false}, field)
-                        field.listeners = Object.assign({input: []}, field.listeners ?? {})
+                        field.listeners = Object.assign({change: []}, field.listeners ?? {})
 
                         $.dataset.type = "bool"
 
@@ -152,6 +152,32 @@ DialogExtensionRegistry.add({
                         $.appendChild($i)
                         break
                     }
+                    case "text": {
+                        field = Object.assign({variant: "m", default: "", after: "", align: "left", validate: (s)=>true}, field)
+                        field.listeners = Object.assign({change: []}, field.listeners ?? {})
+
+                        if(!["s", "m", "l", "area"].includes(field.variant)) throw `unknown text field variant "${field.variant}"`
+                        if(!["left", "center", "right"].includes(field.align)) throw `unknown text field alignment "${field.align}"`
+                        $.dataset.type = "text"
+                        $.dataset.variant = field.variant
+                        $.dataset.align = field.align
+
+                        let $i = document.createElement("input")
+                        $i.type = "text"
+                        $i.value = field.default
+
+                        $i.onchange = (e) => field.listeners.change.map((f)=>f($i.checked))
+
+                        $.appendChild($i)
+                        
+                        if(field.after !== "") {
+                            let $a = document.createElement("span")
+                            $a.innerText = field.after
+
+                            $.appendChild($a)
+                        }
+                        break
+                    }
                     default: {
                         throw `unknown configurator field type "${field.type}"`
                     }
@@ -159,7 +185,9 @@ DialogExtensionRegistry.add({
 
                 let $name = document.createElement("div")
                 $name.classList.add("configurator-name")
-                $name.innerText = name
+                let $$name = document.createElement("span")
+                $$name.innerText = name
+                $name.appendChild($$name)
                 
                 parent.$.appendChild($name)
                 parent.$.appendChild($)

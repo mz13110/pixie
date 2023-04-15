@@ -10,5 +10,6 @@ pinch-zoom {
 pinch-zoom > * {
   transform: translate(var(--x), var(--y)) scale(var(--scale));
   transform-origin: 0 0;
-  will-change: transform;
+  /* removed because it breaks image-rendering: pixeleated (at least on chrome)
+  will-change: transform;*/
 }

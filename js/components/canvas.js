@@ -14,6 +14,8 @@ class CanvasElement extends HTMLElement {
     #selectedColor = "#ffffff"
     get selectedColor() { return this.#selectedColor }
 
+    get bytesPerPixel() { return 4 }
+
     constructor() {
         super()
 
@@ -34,7 +36,7 @@ class CanvasElement extends HTMLElement {
         this.previewCtx = this.$preview.getContext("2d")
 
         let mouse = (e) => {
-            return (ev) => {
+            return async (ev) => {
                 if(this.tool) {
                     let { x, y } = this.offsetToXY(ev.offsetX, ev.offsetY)
                     this.tool[e](this, x, y)
@@ -43,7 +45,7 @@ class CanvasElement extends HTMLElement {
         }
         let lastTouch = { x: 0, y: 0 }
         let touch = (e) => {
-            return (ev) => {
+            return async (ev) => {
                 if(this.tool) {
                     ev.preventDefault()
                     for (let touch of ev.touches) {
@@ -78,12 +80,27 @@ class CanvasElement extends HTMLElement {
         }).data
         return { r: c.data[0], g: c.data[1], b: c.data[2], a: c.data[3] }
     }
+
+    xyToByte(x, y) {
+        return (y * this.width + x) * this.bytesPerPixel
+    }
+    storePixel(x, y, c, l) {
+        c = hex2rgba(c)
+        Editor.layers[0].set([c.r, c.g, c.b, c.a], this.xyToByte(x, y))
+    }
+
+    /* draw functions */
     set(x, y, c) {
-        this.ctx.fillStyle = c ?? this.selectedColor
+        c = c ?? this.selectedColor
+        this.ctx.fillStyle = c
         this.ctx.fillRect(Math.floor(x), Math.floor(y), 1, 1)
+
+        this.storePixel(x, y, c, 0)
     }
     del(x, y) {
         this.ctx.clearRect(Math.floor(x), Math.floor(y), 1, 1)
+        
+        this.storePixel(x, y, "#", 0)
     }
     rset(x, y, w, h, c) {
         this.ctx.fillStyle = c ?? this.selectedColor
@@ -96,6 +113,8 @@ class CanvasElement extends HTMLElement {
     clear() {
         this.ctx.clearRect(0, 0, this.width, this.height)
     }
+
+    /* end draw functions */
 
     clientToOffset(x, y) {
         return {
@@ -111,6 +130,9 @@ class CanvasElement extends HTMLElement {
     }
 
     onResized() {
+        this.clear()
+        Editor.layers = [Buffer.alloc(this.bytesPerPixel * this.width * this.height)]
+
         this.style.setProperty("--width", this.width)
         this.style.setProperty("--height", this.height)
 
