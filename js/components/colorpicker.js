@@ -86,6 +86,8 @@ class ColorPickerElement extends HTMLElement {
         this.$sliderVal = this.$sr.querySelector(".slider-val")
         this.$inputVal = this.$sr.querySelector(".input-val")
 
+        if(WASM_SUPPORTED) this.wasm = getWASM("components/colorpicker")
+
         this.outerDiameter = this.$wheelContainer.getBoundingClientRect().width
         this.innerDiameter = this.$wheelInnerContainer.getBoundingClientRect().width
         let resizeObserver = new ResizeObserver(() => {
@@ -108,7 +110,31 @@ class ColorPickerElement extends HTMLElement {
         this.$wheelSatVCanvas.width = this.satVSize
         this.$wheelSatVCanvas.height = this.satVSize
         this.satVCtx = this.$wheelSatVCanvas.getContext("2d")
+        this.satVGenerator = (h, s) => {
+            let img = new Uint8ClampedArray(s*s*4)
 
+            for(let x = 0; x < s; x++) {
+                for(let y = 0; y < s; y++) {
+                    let color = hsv2rgb(h, x/s*100, y/s*100)
+
+                    img[(s*y+x)*4] = color.r
+                    img[(s*y+x)*4+1] = color.g
+                    img[(s*y+x)*4+2] = color.b
+                    img[(s*y+x)*4+3] = 255
+
+                }
+            }
+            return img
+        }
+        if(WASM_SUPPORTED) {
+            WebAssembly.instantiate(this.wasm, {
+                mem: {
+                    satv_gen: new WebAssembly.Memory({initial: this.satVSize*this.satVSize*4})
+                }
+            }).then((wasm) => {
+                this.satVGenerator = wasm.exports.gen_satv
+            })
+        }
 
         window.onmousemove = async (e) => {
             if(this.changingWheelHue) this.updateHue(e.pageX, e.pageY)
@@ -151,7 +177,7 @@ class ColorPickerElement extends HTMLElement {
             this.val = c.v
             this.redrawHex()
         }
-
+        
         Editor.state.sub("colorpicker.color.hue", (v) => {this.#hue = v; this.onChanged()})
         Editor.state.sub("colorpicker.color.sat", (v) => {this.#sat = v; this.onChanged()})
         Editor.state.sub("colorpicker.color.val", (v) => {this.#val = v; this.onChanged()})
@@ -238,28 +264,17 @@ class ColorPickerElement extends HTMLElement {
         this.$wheelInner.style.transform = `rotate(${this.hue - 45}deg)`
 
         let size = this.satVComputedSize
-
+        
         this.$wheelSatVHandle.style.left = (this.sat/100*size) + "px"
         this.$wheelSatVHandle.style.top = (this.val/100*size) + "px"
 
         this.$wheelSatVHandle.style.setProperty("--color", contrastColor(this.hue, this.sat, this.val) === "black" ? "#000000" : "#ffffff")
 
-        // background
-        const s = this.satVSize
-        let img = this.satVCtx.createImageData(s, s)
-
-        for(let x = 0; x < s; x++) {
-            for(let y = 0; y < s; y++) {
-                let color = hsv2rgb(this.hue, x/s*100, y/s*100)
-
-                img.data[(s*y+x)*4] = color.r
-                img.data[(s*y+x)*4+1] = color.g
-                img.data[(s*y+x)*4+2] = color.b
-                img.data[(s*y+x)*4+3] = 255
-
-            }
-        }
-        this.satVCtx.putImageData(img, 0, 0)
+        if(this.hue === this.satVHue) return
+        this.satVHue = this.hue
+        console.time("satv")
+        this.satVCtx.putImageData(new ImageData(this.satVGenerator(this.hue, this.satVSize, this.satVSize), this.satVSize, this.satVSize), 0, 0)
+        console.timeEnd("satv")
     }
 
     redrawSliders() {

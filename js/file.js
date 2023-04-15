@@ -47,7 +47,6 @@ class File {
 
         let {width, height} = Editor.state.get("canvas.size")
         let img = new PNGImage(width, height)
-        console.log(img.png.data, buf)
 
         img.png.data.set(buf)
         buf = PNG.sync.write(img.png)
