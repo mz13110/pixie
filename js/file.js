@@ -25,6 +25,7 @@ class File {
             }
         }
 
+        Editor.hasSavedOrExported = false
         Editor.bus.call("canvas.clear")
         Editor.state.load(JSON.stringify(Object.assign(def, {
             canvas: {
@@ -39,6 +40,7 @@ class File {
 
     static export(name, download) {
         name = name ?? Editor.filename
+        Editor.hasSavedOrExported = true
         
         let buf = Buffer.from(Editor.layers[0])
         for(let layer of Editor.layers.slice(1)) {
@@ -56,6 +58,7 @@ class File {
     }
 
     static save(name, download) {
+        Editor.filename = name ?? Editor.filename
         let blob = PNGImage.injectInfo(this.export(name, false), {state: Editor.state.export()})
         if(download) window.download(blob, name ?? Editor.filename, IMAGE_MIME_TYPE)
 
@@ -64,6 +67,7 @@ class File {
 }
 Editor.bus.def("file.new", (ev) => File.new(ev.data.size, ev.data.keep))
 Editor.bus.def("file.export", (ev) => File.export(ev.data.name, ev.data.download))
+Editor.bus.def("file.save", (ev) => File.save(ev.data.name, ev.data.download))
 
 // menubar
 Menubar.addSection("file", "File")
@@ -71,9 +75,9 @@ Menubar.addItems(
     {name: "New", icon: "bxs-file-plus",       id: "file.new",         listeners: [()=>UI.pushModal(new NewFileDialog())]},
     {name: "Open", icon: "bxs-file-import",    id: "file.open",        disabled: true},
     {name: Menubar.SEPARATOR,                  id: "file"},
-    {name: "Save", icon: "bxs-save",           id: "file.save",        disabled: true},
-    {name: "Save As",                          id: "file.saveas",      disabled: true},
-    {name: "Export", icon: "bxs-file-export",  id: "file.export",      listeners: [()=>Editor.bus.call("file.export", {name: Editor.filename, download: true})]},
+    {name: "Save", icon: "bxs-save",           id: "file.save",        listeners: [()=>Editor.hasSavedOrExported ? Editor.bus.call("file.save", {name: Editor.filename, download: true}) : UI.pushModal(new SaveFileDialog())]},
+    {name: "Save As",                          id: "file.saveas",      listeners: [()=>UI.pushModal(new SaveFileDialog())]},
+    {name: "Export", icon: "bxs-file-export",  id: "file.export",      listeners: [()=>Editor.hasSavedOrExported ? Editor.bus.call("file.export", {name: Editor.filename, download: true}) : UI.pushModal(new ExportFileDialog())]},
     {name: "Export As",                        id: "file.exportas",    listeners: [()=>UI.pushModal(new ExportFileDialog())]},
     {name: Menubar.SEPARATOR,                  id: "file"},
     {name: "Image Options", icon: "bxs-image", id: "file.fileoptions", disabled: true},

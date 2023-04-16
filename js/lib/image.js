@@ -81,52 +81,75 @@ class PNGImage {
 
         return info
     }
-
-    static injectInfo(raw, info) {
-        let infoChunks = []
+    
+    static encodeInfo(info) {
+        let chunks = []
         for(let [k, d] of Object.entries(info)) {
-            d = JSON.stringify(d)
-            let ic = Buffer.alloc(4 + k.length + d.length)
+            let enc = new TextEncoder()
+            d = enc.encode(JSON.stringify(d))
+            k = enc.encode(k)
+            let t = Buffer.from(enc.encode(PNG_EDITOR_DATA_CHUNK_TYPE))
+
+            let data = Buffer.alloc(1 + k.length + d.length)
+            data.writeUInt8(k.length, 0)
+            data.set(k, 1)
+            data.set(d, 1 + k.length)
+
+            let chunk = Buffer.alloc(4 + 4 + data.length + 4)
+            chunk.writeUInt32BE(data.length, 0)
+            chunk.set(t, 4)
+            chunk.set(data, 4 + 4)
+            chunk.writeUInt32BE(crc32(Buffer.concat([t, data])), 4 + 4 + data.length)
             
+            chunks.push(chunk)
         }
-        let out = Buffer.alloc(raw.length)
-        for(let byte of PNG_SIGNATURE) {
-            if(raw.readUInt8(o) !== byte) throw "bad png signature"
-            o += 1
-        }
-        while(true) {
-            let length = raw.readUInt32BE(o); o += 4
-            let realCRC = crc32(raw.slice(o, o + length + 4))
-            let type = new Array(4).fill().reduce((a) => a + String.fromCharCode(raw.readUInt8(o++)), "")
-            let data = raw.slice(o + 1, (o += length) + 1)
+        return chunks
+        
+    }
+    static injectInfo(raw, info) {
+        return this.injectChunks(raw, this.encodeInfo(info))
+    }
+    static injectChunks(raw, chunks) {
+        if(!Buffer.isBuffer(raw)) throw "input to PNGImage.injectInfo() should be a buffer"
 
-            let crc = raw.readUInt32BE(o); o += 4
-            if(crc !== realCRC) throw "bad checksum"
+        let out = Buffer.alloc(raw.length + chunks.reduce((a,c)=>a+c.length, 0))
+        let o = 0
+        try {
+            for(let byte of PNG_SIGNATURE) {
+                if(raw.readUInt8(o) !== byte) throw "bad png signature"
+                o += 1
+            }
+            while(true) {
+                let totalLength = o
+                let length = raw.readUInt32BE(o); o += 4
+                let realCRC = crc32(raw.slice(o, o + length + 4))
+                let type = new Array(4).fill().reduce((a) => a + String.fromCharCode(raw.readUInt8(o++)), "")
+                o += length
 
-            if(type === "IEND") break
-            else if(type === PNG_EDITOR_DATA_CHUNK_TYPE) {
-                let keyword
-                let keywordLength = data.readUInt8()
-                if(typeof keywordLength !== "number" || keywordLength < 1) throw `invalid ${PNG_EDITOR_DATA_CHUNK_TYPE} keyword length`
-                try {
-                    keyword = new TextDecoder("", {fatal: true}).decode(data.slice(1, keywordLength + 1)).toLowerCase()
-                }
-                catch(e) {
-                    throw `unable to decode ${PNG_EDITOR_DATA_CHUNK_TYPE} keyword`
-                }
+                let crc = raw.readUInt32BE(o); o += 4
+                if(crc !== realCRC) throw "bad checksum"
 
-                if(keyword in info) throw `${PNG_EDITOR_DATA_CHUNK_TYPE} with keyword ${keyword} already declared`
-                if(keyword.startsWith("__") && keyword.endsWith("__")) throw `keywords starting and ending with "__" cannot be used in ${PNG_EDITOR_DATA_CHUNK_TYPE} for security reasons, got keyword ${keyword}`
+                totalLength = o - totalLength
 
-                let data
-                try {
-                    data = JSON.parse(new TextDecoder("", {fatal: true}).decode(data.slice(1 + keywordLength)))
-                }
-                catch(e) {
-                    throw  `unable to decode ${PNG_EDITOR_DATA_CHUNK_TYPE} data as JSON`
+                if(type === "IEND") {
+                    o -= totalLength
+                    let _o = o
+                    raw.copy(out, 0, 0, o)
+                    for(let chunk of chunks) {
+                        out.set(chunk, o)
+                        o += chunk.length
+                    }
+                    // make sure the IEND comes after injected chunks
+                    raw.copy(out, o, _o, raw.length)
+                    break
                 }
             }
         }
+        catch(e) {
+            if(e instanceof RangeError) throw "unexpected EOF"
+            throw e
+        }
+        return out
     }
 }
 
@@ -197,6 +220,7 @@ window.decodePNG = (data) => {
                         }
 
                         let chunk = {type: chunkType, raw: chunkData}
+                        /*
                         switch(chunkType) {
                             case "tEXt": {
                                 let keyword = "", text = ""
@@ -294,6 +318,7 @@ window.decodePNG = (data) => {
                                 if(field !== 7 || i !== 0) throw "bad or missing IHDR"
                             }
                         }
+                        */
 
                         chunks.push(chunk)
                         step = 1

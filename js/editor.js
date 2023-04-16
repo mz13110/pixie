@@ -6,4 +6,5 @@ class Editor {
     static layers = []
 
     static filename = "pixie"
+    static hasSavedOrExported = false
 }

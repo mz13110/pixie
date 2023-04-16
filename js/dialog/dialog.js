@@ -73,9 +73,11 @@ class Dialog extends Modal {
         this.$titleText.innerText = this.name
     }
     onIconChanged() {
-        if(this.icon === "") this.$titleIcon.hidden = false
-        else this.$titleIcon.hidden = true
-        this.$titleIcon.replaceWith($icon(this.icon, "title-icon"))
+        let $ = $icon(this.icon, "title-icon")
+        if(this.icon === "") $.hidden = true
+        else $.hidden = false
+        this.$titleIcon.replaceWith($)
+        this.$titleIcon = $
     }
 
     onClose() {return false}

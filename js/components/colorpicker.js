@@ -272,9 +272,7 @@ class ColorPickerElement extends HTMLElement {
 
         if(this.hue === this.satVHue) return
         this.satVHue = this.hue
-        console.time("satv")
         this.satVCtx.putImageData(new ImageData(this.satVGenerator(this.hue, this.satVSize, this.satVSize), this.satVSize, this.satVSize), 0, 0)
-        console.timeEnd("satv")
     }
 
     redrawSliders() {

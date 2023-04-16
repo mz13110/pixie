@@ -166,7 +166,7 @@ DialogExtensionRegistry.add({
                         $i.type = "text"
                         $i.value = field.default
 
-                        $i.onchange = (e) => field.listeners.change.map((f)=>f($i.checked))
+                        $i.onchange = (e) => field.listeners.change.map((f)=>f($i.value))
 
                         $.appendChild($i)
                         

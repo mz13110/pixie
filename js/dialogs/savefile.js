@@ -1,10 +1,16 @@
 class SaveFileDialog extends ExportFileDialog {
     constructor() {
-        super()
+        super(true)
 
+        this.icon = "bxs-save"
         this.name = "Save File"
-        
-        throw new NotImplementedError("dialogs/savefile.js is not done")
+        this.addActions(
+            {id: "ok", name: "Save", listeners: [() => {
+                Editor.bus.call("file.save", {name: this.values.name, download: true})
+                this.close()
+            }]},
+            {id: "cancel", name: "Cancel", listeners: [this.close.bind(this)]}
+        )
     }
 }
 customElements.define("px-savefile-dialog", SaveFileDialog)
