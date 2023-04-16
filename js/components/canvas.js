@@ -69,7 +69,7 @@ class CanvasElement extends HTMLElement {
         this.oncontextmenu = () => false // disable right click context menu
 
         Editor.state.sub("canvas.size", (v) => { this.#width = v.width; this.#height = v.height; this.onResized() })
-        Editor.state.sub("palettemanager.selection.color", (v) => { this.#selectedColor = hsv2hex(v.hue, v.sat, v.val) })
+        Editor.state.sub("colorpicker.color", (v) => { this.#selectedColor = hsv2hex(v.hue, v.sat, v.val) })
 
         Editor.bus.def("canvas.clear", this.clear.bind(this))
     }

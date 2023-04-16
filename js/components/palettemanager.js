@@ -18,8 +18,6 @@ class PaletteManagerElement extends HTMLElement {
     set selection(v) {Editor.state.set("palettemanager.selection.id", v)}
     get selection() {return this.#selection}
 
-    set selectionColor(v) {Editor.state.set("palettemanager.selection.color", v)}
-
     set mode(v) {Editor.state.set("palettemanager.mode", v)}
     get mode() {return this.#mode}
 
@@ -75,6 +73,7 @@ class PaletteManagerElement extends HTMLElement {
     }
 
     onPickedColorChanged(hue, sat, val) {
+        console.log("b")
         if(this.hasColor(hue, sat, val)) this.selection = this.indexOfColor(hue, sat, val)
         else {
             let c = hsv2rgb(hue, sat, val)
@@ -83,6 +82,7 @@ class PaletteManagerElement extends HTMLElement {
             c = contrastColor(hue, sat, val) === "black" ? "#000000" : "#ffffff"
             this.$add.style.color = c
             this.$add.style.setProperty("--contrast", c)
+            this.selection = -1
         }
 
         if(this.mode === "editing" && this.selection !== -1) {
@@ -95,7 +95,6 @@ class PaletteManagerElement extends HTMLElement {
                 this.selection = this.indexOfColor(hue, sat, val)
             }
         }
-        else this.selection = -1
     }
     onPaletteChanged() {
         this.$colors.querySelectorAll(".color").forEach((e) => e.remove())
@@ -136,12 +135,14 @@ class PaletteManagerElement extends HTMLElement {
         }
     }
     onSelectionChanged() {
+        console.log("a")
         this.$colors.querySelectorAll("div[data-selected=true]").forEach((e) => e.dataset.selected = false)
 
         if(this.selection === -1) this.$add.dataset.selected = true
         else this.$colors.querySelector(`div[data-id="${this.selection}"]`).dataset.selected = true
 
-        this.selectionColor = this.getColor(this.selection)
+        let c = this.getColor(this.selection)
+        Editor.state.set("colorpicker.color", c, false)
     }
     onModeChanged() {
         if(this.$section) {

@@ -22,6 +22,8 @@ class State {
             else o = o = (o[dir] = {})
         }
 
+        if(o[k.split(".").pop()] === v) return
+
         v = JSON.parse(JSON.stringify(v))
         o[k.split(".").pop()] = v
 
@@ -60,7 +62,7 @@ class State {
         }
     }
     get(k) {
-        this.log("get", k)
+        //this.log("get", k)
 
         let d = this.getDefault(k)
         k = k.toLowerCase()
@@ -72,7 +74,7 @@ class State {
         return (typeof d === "object" && typeof o === "object") ? Object.assign(d, JSON.parse(JSON.stringify(o))) : JSON.parse(JSON.stringify(o))
     }
     getDefault(k, d) {
-        this.log("get default", k)
+        //this.log("get default", k)
 
         k = k.toLowerCase()
         let o = this.defaults
